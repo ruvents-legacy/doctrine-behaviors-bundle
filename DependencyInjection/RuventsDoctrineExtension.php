@@ -23,7 +23,7 @@ class RuventsDoctrineExtension extends ConfigurableExtension
             $loader->load('translatable_field.yml');
 
             $container->findDefinition('ruvents_doctrine.event_listener.translatable_field_doctrine')
-                ->replaceArgument(1, $mergedConfig['translatable_field']['default_locale']);
+                ->replaceArgument(1, $mergedConfig['default_locale']);
         }
     }
 }
