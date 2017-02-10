@@ -19,10 +19,10 @@ class RuventsDoctrineExtension extends ConfigurableExtension
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
-        if ($mergedConfig['translatable_field']['enabled']) {
-            $loader->load('translatable_field.yml');
+        if ($mergedConfig['translatable']['enabled']) {
+            $loader->load('translatable.yml');
 
-            $container->findDefinition('ruvents_doctrine.event_listener.translatable_field_doctrine')
+            $container->findDefinition('ruvents_doctrine.event_listener.translatable_doctrine')
                 ->replaceArgument(1, $mergedConfig['default_locale']);
         }
     }

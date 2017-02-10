@@ -1,0 +1,15 @@
+services:
+  ruvents_doctrine.event_listener.translatable_doctrine:
+    class: Ruvents\DoctrineBundle\EventListener\TranslatableDoctrineListener
+    arguments:
+      - '@annotation_reader'
+      - ~
+    tags:
+      - { name: doctrine.event_subscriber }
+
+  ruvents_doctrine.event_listener.translatable_symfony:
+    class: Ruvents\DoctrineBundle\EventListener\TranslatableSymfonyListener
+    arguments:
+      - '@ruvents_doctrine.event_listener.translatable_doctrine'
+    tags:
+      - { name: kernel.event_subscriber }

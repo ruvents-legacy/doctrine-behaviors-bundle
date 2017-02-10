@@ -6,17 +6,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class TranslatableFieldSymfonyListener implements EventSubscriberInterface
+class TranslatableSymfonyListener implements EventSubscriberInterface
 {
     /**
-     * @var TranslatableFieldDoctrineListener
+     * @var TranslatableDoctrineListener
      */
     private $doctrineListener;
 
     /**
-     * @param TranslatableFieldDoctrineListener $doctrineListener
+     * @param TranslatableDoctrineListener $doctrineListener
      */
-    public function __construct(TranslatableFieldDoctrineListener $doctrineListener)
+    public function __construct(TranslatableDoctrineListener $doctrineListener)
     {
         $this->doctrineListener = $doctrineListener;
     }

@@ -4,14 +4,15 @@ namespace Ruvents\DoctrineBundle\EventListener;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Ruvents\DoctrineBundle\Annotation\TranslatableField;
-use Ruvents\DoctrineBundle\Config\TranslatableFieldConfig;
+use Ruvents\DoctrineBundle\Annotation\Translatable;
+use Ruvents\DoctrineBundle\Config\TranslatableConfig;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-class TranslatableFieldDoctrineListener implements EventSubscriber
+class TranslatableDoctrineListener implements EventSubscriber
 {
     /**
      * @var Reader
@@ -24,23 +25,30 @@ class TranslatableFieldDoctrineListener implements EventSubscriber
     private $defaultLocale;
 
     /**
+     * @var PropertyAccessor
+     */
+    private $accessor;
+
+    /**
      * @var string
      */
     private $currentLocale;
 
     /**
-     * @var TranslatableFieldConfig[][]
+     * @var TranslatableConfig[][]
      */
     private $configs = [];
 
     /**
-     * @param Reader $reader
-     * @param string $defaultLocale
+     * @param Reader                $reader
+     * @param string                $defaultLocale
+     * @param PropertyAccessor|null $accessor
      */
-    public function __construct(Reader $reader, $defaultLocale)
+    public function __construct(Reader $reader, $defaultLocale, PropertyAccessor $accessor = null)
     {
         $this->reader = $reader;
         $this->defaultLocale = $defaultLocale;
+        $this->accessor = $accessor ?: PropertyAccess::createPropertyAccessor();
     }
 
     /**
@@ -103,74 +111,30 @@ class TranslatableFieldDoctrineListener implements EventSubscriber
     private function processEntity($entity, ClassMetadata $metadata)
     {
         $configs = $this->getClassConfigs($metadata);
-        $locale = $this->currentLocale ?: $this->defaultLocale;
 
         foreach ($configs as $property => $config) {
-            $localeField = $this->getLocaleField($property, $locale, $this->defaultLocale, $config, $metadata);
+            $localePath = $this->getLocalePath($config->propertyPath, $this->currentLocale);
+            $value = $this->getLocaleValue($entity, $localePath);
+
+            if (null === $value && $this->defaultLocale !== $this->currentLocale) {
+                $localePath = $this->getLocalePath($config->propertyPath, $this->defaultLocale);
+                $value = $this->getLocaleValue($entity, $localePath);
+            }
+
             $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
 
             if (!$reflectionProperty->isPublic()) {
                 $reflectionProperty->setAccessible(true);
             }
 
-            $reflectionProperty->setValue($entity, $metadata->getFieldValue($entity, $localeField));
+            $reflectionProperty->setValue($entity, $value);
         }
-    }
-
-    /**
-     * @param string                  $property
-     * @param string                  $locale
-     * @param string                  $defaultLocale
-     * @param TranslatableFieldConfig $config
-     * @param ClassMetadata           $metadata
-     *
-     * @return array|string|\string[]
-     * @throws \RuntimeException
-     */
-    private function getLocaleField(
-        $property,
-        $locale,
-        $defaultLocale,
-        TranslatableFieldConfig $config,
-        ClassMetadata $metadata
-    ) {
-        if (isset($config->map[$locale])) {
-            if ($metadata->hasField($config->map[$locale])) {
-                return $config->map[$locale];
-            }
-
-            throw new \RuntimeException(
-                sprintf('Field "%s" is not a mapped field of the entity "%s".', $config->map[$locale],
-                    $metadata->getName())
-            );
-        }
-
-        $localeField = $property.Inflector::classify($locale);
-
-        if ($metadata->hasField($localeField)) {
-            $config->map[$locale] = $localeField;
-
-            return $localeField;
-        }
-
-        $localeField = $property.Inflector::classify($defaultLocale);
-
-        if ($metadata->hasField($localeField)) {
-            $config->map[$locale] = $localeField;
-
-            return $localeField;
-        }
-
-        throw new \RuntimeException(
-            sprintf('Failed to find a locale field. Entity: "%s", field: "%s", locale: "%s".',
-                $metadata->getName(), $property, $locale)
-        );
     }
 
     /**
      * @param ClassMetadata $metadata
      *
-     * @return TranslatableFieldConfig[]
+     * @return TranslatableConfig[]
      */
     private function getClassConfigs(ClassMetadata $metadata)
     {
@@ -183,16 +147,40 @@ class TranslatableFieldDoctrineListener implements EventSubscriber
         $this->configs[$class] = [];
 
         foreach ($metadata->getReflectionClass()->getProperties() as $property) {
-            /** @var TranslatableField $config */
-            $config = $this->reader->getPropertyAnnotation($property, TranslatableField::class);
+            /** @var Translatable $config */
+            $config = $this->reader->getPropertyAnnotation($property, Translatable::class);
 
             if (null === $config) {
                 continue;
             }
 
-            $this->configs[$class][$property->getName()] = new TranslatableFieldConfig($config);
+            $this->configs[$class][$property->getName()] = new TranslatableConfig($config);
         }
 
         return $this->configs[$class];
+    }
+
+    /**
+     * @param object $entity
+     * @param string $path
+     *
+     * @return mixed|null
+     */
+    private function getLocaleValue($entity, $path)
+    {
+        return $this->accessor->isReadable($entity, $path)
+            ? $this->accessor->getValue($entity, $path)
+            : null;
+    }
+
+    /**
+     * @param string $propertyPath
+     * @param string $locale
+     *
+     * @return string
+     */
+    private function getLocalePath($propertyPath, $locale)
+    {
+        return str_replace(['%locale%', '%Locale%'], [$locale, ucfirst($locale)], $propertyPath);
     }
 }

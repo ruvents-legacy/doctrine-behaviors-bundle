@@ -21,7 +21,7 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue('%locale%')
                 ->end()
-                ->arrayNode('translatable_field')
+                ->arrayNode('translatable')
                     ->canBeEnabled()
                 ->end()
             ->end();
