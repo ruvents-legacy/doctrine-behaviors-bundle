@@ -6,9 +6,9 @@ use Doctrine\Common\Annotations\Reader;
 use Ruvents\DoctrineBundle\Mapping\Author;
 use Ruvents\DoctrineBundle\Mapping\Metadata\AuthorMetadataInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\ClassMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampableMetadataInterface;
+use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampMetadataInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\TranslatableMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Timestampable;
+use Ruvents\DoctrineBundle\Mapping\Timestamp;
 use Ruvents\DoctrineBundle\Mapping\Translatable;
 
 class AnnotationLoader implements LoaderInterface
@@ -33,9 +33,9 @@ class AnnotationLoader implements LoaderInterface
     {
         foreach ($metadata->getReflectionClass()->getProperties() as $property) {
             foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
-                if ($annotation instanceof Timestampable) {
-                    if ($metadata instanceof TimestampableMetadataInterface) {
-                        $metadata->addTimestampableConfig($property->getName(), $annotation);
+                if ($annotation instanceof Timestamp) {
+                    if ($metadata instanceof TimestampMetadataInterface) {
+                        $metadata->addTimestampProperty($property->getName(), $annotation);
                     }
                 }
 

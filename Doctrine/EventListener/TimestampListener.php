@@ -6,10 +6,9 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Ruvents\DoctrineBundle\Mapping\Factory\ClassMetadataFactoryInterface;
-use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampableMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Timestampable;
+use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampMetadataInterface;
 
-class TimestampableListener implements EventSubscriber
+class TimestampListener implements EventSubscriber
 {
     /**
      * @var ClassMetadataFactoryInterface
@@ -36,11 +35,9 @@ class TimestampableListener implements EventSubscriber
             $metadata = $this->metadataFactory->getMetadataFor($entity);
             $time = new \DateTime();
 
-            if ($metadata instanceof TimestampableMetadataInterface) {
-                foreach ($metadata->getTimestampablePropertiesConfigs() as $property => $config) {
-                    if (Timestampable::ON_CREATE === $config->on
-                        || Timestampable::ON_UPDATE === $config->on
-                    ) {
+            if ($metadata instanceof TimestampMetadataInterface) {
+                foreach ($metadata->getTimestampProperties() as $property => $timestamp) {
+                    if ($timestamp->trackOnPersist()) {
                         $entityMetadata->setFieldValue($entity, $property, clone $time);
                     }
                 }
@@ -61,9 +58,9 @@ class TimestampableListener implements EventSubscriber
             $time = new \DateTime();
             $changed = false;
 
-            if ($metadata instanceof TimestampableMetadataInterface) {
-                foreach ($metadata->getTimestampablePropertiesConfigs() as $property => $config) {
-                    if (Timestampable::ON_UPDATE === $config->on) {
+            if ($metadata instanceof TimestampMetadataInterface) {
+                foreach ($metadata->getTimestampProperties() as $property => $timestamp) {
+                    if ($timestamp->trackOnUpdate()) {
                         $entityMetadata->setFieldValue($entity, $property, clone $time);
                         $changed = true;
                     }

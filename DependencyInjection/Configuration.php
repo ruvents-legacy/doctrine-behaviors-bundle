@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('timestampable')
+                ->arrayNode('timestamp')
                     ->canBeEnabled()
                 ->end()
                 ->arrayNode('author')

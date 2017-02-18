@@ -22,8 +22,8 @@ class RuventsDoctrineExtension extends ConfigurableExtension
 
         $loader->load('common.yml');
 
-        if ($mergedConfig['timestampable']['enabled']) {
-            $loader->load('timestampable.yml');
+        if ($mergedConfig['timestamp']['enabled']) {
+            $loader->load('timestamp.yml');
         }
 
         if ($mergedConfig['author']['enabled']) {
