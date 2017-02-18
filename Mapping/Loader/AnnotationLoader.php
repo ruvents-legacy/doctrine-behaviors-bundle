@@ -3,6 +3,8 @@
 namespace Ruvents\DoctrineBundle\Mapping\Loader;
 
 use Doctrine\Common\Annotations\Reader;
+use Ruvents\DoctrineBundle\Mapping\Author;
+use Ruvents\DoctrineBundle\Mapping\Metadata\AuthorMetadataInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\ClassMetadataInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampableMetadataInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\TranslatableMetadataInterface;
@@ -34,6 +36,12 @@ class AnnotationLoader implements LoaderInterface
                 if ($annotation instanceof Timestampable) {
                     if ($metadata instanceof TimestampableMetadataInterface) {
                         $metadata->addTimestampableConfig($property->getName(), $annotation);
+                    }
+                }
+
+                if ($annotation instanceof Author) {
+                    if ($metadata instanceof AuthorMetadataInterface) {
+                        $metadata->addAuthorProperty($property->getName(), $annotation);
                     }
                 }
 

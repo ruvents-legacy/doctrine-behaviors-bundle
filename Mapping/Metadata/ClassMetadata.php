@@ -4,7 +4,7 @@ namespace Ruvents\DoctrineBundle\Mapping\Metadata;
 
 class ClassMetadata
     extends AbstractClassMetadata
-    implements TranslatableMetadataInterface, TimestampableMetadataInterface
+    implements TimestampableMetadataInterface, AuthorMetadataInterface, TranslatableMetadataInterface
 {
-    use TranslatableMetadataTrait, TimestampableMetadataTrait;
+    use TimestampableMetadataTrait, AuthorMetadataTrait, TranslatableMetadataTrait;
 }
