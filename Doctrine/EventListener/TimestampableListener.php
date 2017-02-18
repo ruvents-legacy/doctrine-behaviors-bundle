@@ -71,7 +71,9 @@ class TimestampableListener implements EventSubscriber
             }
 
             if ($changed) {
-                $event->getEntityManager()->getUnitOfWork()->computeChangeSet($entityMetadata, $entity);
+                $event->getEntityManager()
+                    ->getUnitOfWork()
+                    ->recomputeSingleEntityChangeSet($entityMetadata, $entity);
             }
         }
     }
