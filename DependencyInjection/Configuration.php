@@ -17,12 +17,13 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('default_locale')
-                    ->cannotBeEmpty()
-                    ->defaultValue('%locale%')
-                ->end()
                 ->arrayNode('translatable')
                     ->canBeEnabled()
+                    ->children()
+                        ->arrayNode('fallbacks')
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
                 ->end()
             ->end();
 

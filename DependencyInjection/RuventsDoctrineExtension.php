@@ -22,8 +22,8 @@ class RuventsDoctrineExtension extends ConfigurableExtension
         if ($mergedConfig['translatable']['enabled']) {
             $loader->load('translatable.yml');
 
-            $container->findDefinition('ruvents_doctrine.event_listener.translatable_doctrine')
-                ->replaceArgument(1, $mergedConfig['default_locale']);
+            $container->findDefinition('ruvents_doctrine.translator')
+                ->replaceArgument(1, $mergedConfig['translatable']['fallbacks']);
         }
     }
 }
