@@ -18,7 +18,7 @@ interface TimestampableMetadataInterface extends ClassMetadataInterface
     public function getTimestampablePropertiesConfigs();
 
     /**
-     * @param $property
+     * @param string $property
      *
      * @return bool
      */

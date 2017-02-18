@@ -18,7 +18,7 @@ interface TranslatableMetadataInterface extends ClassMetadataInterface
     public function getTranslatablePropertiesConfigs();
 
     /**
-     * @param $property
+     * @param string $property
      *
      * @return bool
      */
