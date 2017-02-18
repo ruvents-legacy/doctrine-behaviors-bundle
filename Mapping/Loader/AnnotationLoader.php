@@ -4,7 +4,9 @@ namespace Ruvents\DoctrineBundle\Mapping\Loader;
 
 use Doctrine\Common\Annotations\Reader;
 use Ruvents\DoctrineBundle\Mapping\Metadata\ClassMetadataInterface;
+use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampableMetadataInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\TranslatableMetadataInterface;
+use Ruvents\DoctrineBundle\Mapping\Timestampable;
 use Ruvents\DoctrineBundle\Mapping\Translatable;
 
 class AnnotationLoader implements LoaderInterface
@@ -29,6 +31,12 @@ class AnnotationLoader implements LoaderInterface
     {
         foreach ($metadata->getReflectionClass()->getProperties() as $property) {
             foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
+                if ($annotation instanceof Timestampable) {
+                    if ($metadata instanceof TimestampableMetadataInterface) {
+                        $metadata->addTimestampableConfig($property->getName(), $annotation);
+                    }
+                }
+
                 if ($annotation instanceof Translatable) {
                     if ($metadata instanceof TranslatableMetadataInterface) {
                         $metadata->addTranslatableConfig($property->getName(), $annotation);

@@ -17,6 +17,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('timestampable')
+                    ->canBeEnabled()
+                ->end()
                 ->arrayNode('translatable')
                     ->canBeEnabled()
                     ->children()
