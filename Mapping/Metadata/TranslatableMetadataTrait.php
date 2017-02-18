@@ -9,7 +9,7 @@ trait TranslatableMetadataTrait
     /**
      * @var Translatable[]
      */
-    public $translatablePropertiesConfigs;
+    public $translatablePropertiesConfigs = [];
 
     /**
      * @see TranslatableMetadataInterface::addTranslatableConfig

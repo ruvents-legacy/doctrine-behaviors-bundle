@@ -9,7 +9,7 @@ trait TimestampableMetadataTrait
     /**
      * @var Timestampable[]
      */
-    public $timestampablePropertiesConfigs;
+    public $timestampablePropertiesConfigs = [];
 
     /**
      * @see TimestampableMetadataInterface::addTimestampableConfig
