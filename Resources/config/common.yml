@@ -1,0 +1,10 @@
+services:
+  ruvents_doctrine.mapping.loader.annotation:
+    class: Ruvents\DoctrineBundle\Mapping\Loader\AnnotationLoader
+    arguments:
+      - '@annotation_reader'
+
+  ruvents_doctrine.mapping.factory:
+    class: Ruvents\DoctrineBundle\Mapping\Factory\ClassMetadataFactory
+    arguments:
+      - '@ruvents_doctrine.mapping.loader.annotation'

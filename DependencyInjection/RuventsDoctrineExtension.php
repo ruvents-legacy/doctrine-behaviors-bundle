@@ -19,6 +19,8 @@ class RuventsDoctrineExtension extends ConfigurableExtension
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
+        $loader->load('common.yml');
+
         if ($mergedConfig['translatable']['enabled']) {
             $loader->load('translatable.yml');
 
