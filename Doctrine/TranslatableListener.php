@@ -43,13 +43,34 @@ class TranslatableListener implements EventSubscriber
     }
 
     /**
+     * @param LifecycleEventArgs $event
+     */
+    public function postPersist(LifecycleEventArgs $event)
+    {
+        if ($this->currentLocale) {
+            $this->translatableManager->translate($event->getEntity(), $this->currentLocale);
+        }
+    }
+
+    /**
+     * @param LifecycleEventArgs $event
+     */
+    public function postUpdate(LifecycleEventArgs $event)
+    {
+        if ($this->currentLocale) {
+            $this->translatableManager->translate($event->getEntity(), $this->currentLocale);
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getSubscribedEvents()
     {
         return [
             Events::postLoad,
-            //Events::postFlush,
+            Events::postPersist,
+            Events::postUpdate,
         ];
     }
 }
