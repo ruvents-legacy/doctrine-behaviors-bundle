@@ -2,7 +2,7 @@
 
 namespace Ruvents\DoctrineBundle\EventListener;
 
-use Ruvents\DoctrineBundle\Doctrine\TranslatableListener;
+use Ruvents\DoctrineBundle\Doctrine\EventListener\TranslatableListener;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class TranslatableRequestListener

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ruvents\DoctrineBundle\Doctrine;
+namespace Ruvents\DoctrineBundle\Doctrine\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;

@@ -6,7 +6,7 @@ services:
       - []
 
   ruvents_doctrine.doctrine.event_listener.translatable:
-    class: Ruvents\DoctrineBundle\Doctrine\TranslatableListener
+    class: Ruvents\DoctrineBundle\Doctrine\EventListener\TranslatableListener
     arguments:
       - '@ruvents_doctrine.translator'
     tags:
