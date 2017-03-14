@@ -37,9 +37,15 @@ class TimestampListener implements EventSubscriber
 
             if ($metadata instanceof TimestampMetadataInterface) {
                 foreach ($metadata->getTimestampProperties() as $property => $timestamp) {
-                    if ($timestamp->trackOnPersist()) {
-                        $entityMetadata->setFieldValue($entity, $property, clone $time);
+                    if (!$timestamp->trackOnPersist()) {
+                        continue;
                     }
+
+                    if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                        continue;
+                    }
+
+                    $entityMetadata->setFieldValue($entity, $property, clone $time);
                 }
             }
         }
@@ -60,10 +66,16 @@ class TimestampListener implements EventSubscriber
 
             if ($metadata instanceof TimestampMetadataInterface) {
                 foreach ($metadata->getTimestampProperties() as $property => $timestamp) {
-                    if ($timestamp->trackOnUpdate()) {
-                        $entityMetadata->setFieldValue($entity, $property, clone $time);
-                        $changed = true;
+                    if (!$timestamp->trackOnUpdate()) {
+                        continue;
                     }
+
+                    if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                        continue;
+                    }
+
+                    $entityMetadata->setFieldValue($entity, $property, clone $time);
+                    $changed = true;
                 }
             }
 

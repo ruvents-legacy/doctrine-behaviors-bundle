@@ -44,9 +44,15 @@ class AuthorListener implements EventSubscriber
 
             if ($metadata instanceof AuthorMetadataInterface) {
                 foreach ($metadata->getAuthorProperties() as $property => $author) {
-                    if ($author->trackOnPersist()) {
-                        $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
+                    if (!$author->trackOnPersist()) {
+                        continue;
                     }
+
+                    if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                        continue;
+                    }
+
+                    $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
                 }
             }
         }
@@ -66,10 +72,16 @@ class AuthorListener implements EventSubscriber
 
             if ($metadata instanceof AuthorMetadataInterface) {
                 foreach ($metadata->getAuthorProperties() as $property => $author) {
-                    if ($author->trackOnUpdate()) {
-                        $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
-                        $changed = true;
+                    if (!$author->trackOnUpdate()) {
+                        continue;
                     }
+
+                    if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                        continue;
+                    }
+
+                    $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
+                    $changed = true;
                 }
             }
 

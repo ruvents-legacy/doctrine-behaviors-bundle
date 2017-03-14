@@ -14,6 +14,11 @@ abstract class AbstractTrackableMapping
     public $on;
 
     /**
+     * @var bool
+     */
+    public $onlyIfNull = false;
+
+    /**
      * @return bool
      */
     public function trackOnPersist()
