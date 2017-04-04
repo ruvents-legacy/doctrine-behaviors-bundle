@@ -9,7 +9,10 @@ use Ruvents\DoctrineBundle\TranslatorInterface;
 
 class TranslatableListener implements EventSubscriber
 {
-    private $translatableManager;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * @var string
@@ -17,11 +20,11 @@ class TranslatableListener implements EventSubscriber
     private $currentLocale;
 
     /**
-     * @param TranslatorInterface $translatableManager
+     * @param TranslatorInterface $translator
      */
-    public function __construct(TranslatorInterface $translatableManager)
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->translatableManager = $translatableManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -38,7 +41,7 @@ class TranslatableListener implements EventSubscriber
     public function postLoad(LifecycleEventArgs $event)
     {
         if ($this->currentLocale) {
-            $this->translatableManager->translate($event->getEntity(), $this->currentLocale);
+            $this->translator->translate($event->getEntity(), $this->currentLocale);
         }
     }
 
@@ -48,7 +51,7 @@ class TranslatableListener implements EventSubscriber
     public function postPersist(LifecycleEventArgs $event)
     {
         if ($this->currentLocale) {
-            $this->translatableManager->translate($event->getEntity(), $this->currentLocale);
+            $this->translator->translate($event->getEntity(), $this->currentLocale);
         }
     }
 
@@ -58,7 +61,7 @@ class TranslatableListener implements EventSubscriber
     public function postUpdate(LifecycleEventArgs $event)
     {
         if ($this->currentLocale) {
-            $this->translatableManager->translate($event->getEntity(), $this->currentLocale);
+            $this->translator->translate($event->getEntity(), $this->currentLocale);
         }
     }
 
