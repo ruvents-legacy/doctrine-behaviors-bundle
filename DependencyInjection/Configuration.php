@@ -37,6 +37,9 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('use_date')
+                    ->canBeEnabled()
+                ->end()
             ->end();
 
         return $treeBuilder;

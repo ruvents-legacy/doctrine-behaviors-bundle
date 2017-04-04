@@ -39,5 +39,9 @@ class RuventsDoctrineExtension extends ConfigurableExtension
             $container->findDefinition('ruvents_doctrine.translator')
                 ->replaceArgument(1, $mergedConfig['translatable']['fallbacks']);
         }
+
+        if ($mergedConfig['use_date']['enabled']) {
+            $loader->load('use_date.yml');
+        }
     }
 }

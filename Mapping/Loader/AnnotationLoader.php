@@ -3,13 +3,8 @@
 namespace Ruvents\DoctrineBundle\Mapping\Loader;
 
 use Doctrine\Common\Annotations\Reader;
-use Ruvents\DoctrineBundle\Mapping\Author;
-use Ruvents\DoctrineBundle\Mapping\Metadata\AuthorMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Metadata\ClassMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Metadata\TimestampMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Metadata\TranslatableMetadataInterface;
-use Ruvents\DoctrineBundle\Mapping\Timestamp;
-use Ruvents\DoctrineBundle\Mapping\Translatable;
+use Ruvents\DoctrineBundle\Mapping;
+use Ruvents\DoctrineBundle\Mapping\Metadata;
 
 class AnnotationLoader implements LoaderInterface
 {
@@ -29,25 +24,31 @@ class AnnotationLoader implements LoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadClassMetadata(ClassMetadataInterface $metadata)
+    public function loadClassMetadata(Metadata\ClassMetadataInterface $metadata)
     {
         foreach ($metadata->getReflectionClass()->getProperties() as $property) {
             foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
-                if ($annotation instanceof Timestamp) {
-                    if ($metadata instanceof TimestampMetadataInterface) {
+                if ($annotation instanceof Mapping\Timestamp) {
+                    if ($metadata instanceof Metadata\TimestampMetadataInterface) {
                         $metadata->addTimestampMapping($property->getName(), $annotation);
                     }
                 }
 
-                if ($annotation instanceof Author) {
-                    if ($metadata instanceof AuthorMetadataInterface) {
+                if ($annotation instanceof Mapping\Author) {
+                    if ($metadata instanceof Metadata\AuthorMetadataInterface) {
                         $metadata->addAuthorMapping($property->getName(), $annotation);
                     }
                 }
 
-                if ($annotation instanceof Translatable) {
-                    if ($metadata instanceof TranslatableMetadataInterface) {
+                if ($annotation instanceof Mapping\Translatable) {
+                    if ($metadata instanceof Metadata\TranslatableMetadataInterface) {
                         $metadata->addTranslatableMapping($property->getName(), $annotation);
+                    }
+                }
+
+                if ($annotation instanceof Mapping\UseDate) {
+                    if ($metadata instanceof Metadata\UseDateMetadataInterface) {
+                        $metadata->addUseDateMapping($property->getName(), $annotation);
                     }
                 }
             }
