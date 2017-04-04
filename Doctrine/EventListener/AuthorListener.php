@@ -38,23 +38,27 @@ class AuthorListener implements EventSubscriber
     {
         $entity = $event->getEntity();
 
-        if ($this->metadataFactory->hasMetadataFor($entity)) {
-            $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
-            $metadata = $this->metadataFactory->getMetadataFor($entity);
+        if (!$this->metadataFactory->hasMetadataFor($entity)) {
+            return;
+        }
 
-            if ($metadata instanceof AuthorMetadataInterface) {
-                foreach ($metadata->getAuthorMappings() as $property => $author) {
-                    if (!$author->trackOnPersist()) {
-                        continue;
-                    }
+        $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
+        $metadata = $this->metadataFactory->getMetadataFor($entity);
 
-                    if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
-                        continue;
-                    }
+        if (!$metadata instanceof AuthorMetadataInterface) {
+            return;
+        }
 
-                    $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
-                }
+        foreach ($metadata->getAuthorMappings() as $property => $author) {
+            if (!$author->trackOnPersist()) {
+                continue;
             }
+
+            if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                continue;
+            }
+
+            $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
         }
     }
 
@@ -65,31 +69,35 @@ class AuthorListener implements EventSubscriber
     {
         $entity = $event->getEntity();
 
-        if ($this->metadataFactory->hasMetadataFor($entity)) {
-            $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
-            $metadata = $this->metadataFactory->getMetadataFor($entity);
-            $changed = false;
+        if (!$this->metadataFactory->hasMetadataFor($entity)) {
+            return;
+        }
 
-            if ($metadata instanceof AuthorMetadataInterface) {
-                foreach ($metadata->getAuthorMappings() as $property => $author) {
-                    if (!$author->trackOnUpdate()) {
-                        continue;
-                    }
+        $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
+        $metadata = $this->metadataFactory->getMetadataFor($entity);
+        $changed = false;
 
-                    if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
-                        continue;
-                    }
+        if (!$metadata instanceof AuthorMetadataInterface) {
+            return;
+        }
 
-                    $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
-                    $changed = true;
-                }
+        foreach ($metadata->getAuthorMappings() as $property => $author) {
+            if (!$author->trackOnUpdate()) {
+                continue;
             }
 
-            if ($changed) {
-                $event->getEntityManager()
-                    ->getUnitOfWork()
-                    ->recomputeSingleEntityChangeSet($entityMetadata, $entity);
+            if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                continue;
             }
+
+            $entityMetadata->setFieldValue($entity, $property, $this->provider->getAuthor());
+            $changed = true;
+        }
+
+        if ($changed) {
+            $event->getEntityManager()
+                ->getUnitOfWork()
+                ->recomputeSingleEntityChangeSet($entityMetadata, $entity);
         }
     }
 

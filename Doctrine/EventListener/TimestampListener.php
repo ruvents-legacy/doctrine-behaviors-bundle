@@ -30,24 +30,28 @@ class TimestampListener implements EventSubscriber
     {
         $entity = $event->getEntity();
 
-        if ($this->metadataFactory->hasMetadataFor($entity)) {
-            $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
-            $metadata = $this->metadataFactory->getMetadataFor($entity);
-            $time = new \DateTime();
+        if (!$this->metadataFactory->hasMetadataFor($entity)) {
+            return;
+        }
 
-            if ($metadata instanceof TimestampMetadataInterface) {
-                foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
-                    if (!$timestamp->trackOnPersist()) {
-                        continue;
-                    }
+        $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
+        $metadata = $this->metadataFactory->getMetadataFor($entity);
+        $time = new \DateTime();
 
-                    if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
-                        continue;
-                    }
+        if (!$metadata instanceof TimestampMetadataInterface) {
+            return;
+        }
 
-                    $entityMetadata->setFieldValue($entity, $property, clone $time);
-                }
+        foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
+            if (!$timestamp->trackOnPersist()) {
+                continue;
             }
+
+            if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                continue;
+            }
+
+            $entityMetadata->setFieldValue($entity, $property, clone $time);
         }
     }
 
@@ -58,32 +62,36 @@ class TimestampListener implements EventSubscriber
     {
         $entity = $event->getEntity();
 
-        if ($this->metadataFactory->hasMetadataFor($entity)) {
-            $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
-            $metadata = $this->metadataFactory->getMetadataFor($entity);
-            $time = new \DateTime();
-            $changed = false;
+        if (!$this->metadataFactory->hasMetadataFor($entity)) {
+            return;
+        }
 
-            if ($metadata instanceof TimestampMetadataInterface) {
-                foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
-                    if (!$timestamp->trackOnUpdate()) {
-                        continue;
-                    }
+        $entityMetadata = $event->getEntityManager()->getClassMetadata(get_class($entity));
+        $metadata = $this->metadataFactory->getMetadataFor($entity);
+        $time = new \DateTime();
+        $changed = false;
 
-                    if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
-                        continue;
-                    }
+        if (!$metadata instanceof TimestampMetadataInterface) {
+            return;
+        }
 
-                    $entityMetadata->setFieldValue($entity, $property, clone $time);
-                    $changed = true;
-                }
+        foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
+            if (!$timestamp->trackOnUpdate()) {
+                continue;
             }
 
-            if ($changed) {
-                $event->getEntityManager()
-                    ->getUnitOfWork()
-                    ->recomputeSingleEntityChangeSet($entityMetadata, $entity);
+            if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+                continue;
             }
+
+            $entityMetadata->setFieldValue($entity, $property, clone $time);
+            $changed = true;
+        }
+
+        if ($changed) {
+            $event->getEntityManager()
+                ->getUnitOfWork()
+                ->recomputeSingleEntityChangeSet($entityMetadata, $entity);
         }
     }
 
