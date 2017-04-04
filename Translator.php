@@ -5,8 +5,9 @@ namespace Ruvents\DoctrineBundle;
 use Ruvents\DoctrineBundle\Mapping\Factory\ClassMetadataFactoryInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\TranslatableMetadataInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\PropertyAccess\PropertyPathInterface;
 
 class Translator implements TranslatorInterface
 {
@@ -21,19 +22,19 @@ class Translator implements TranslatorInterface
     private $fallbackLocales;
 
     /**
-     * @var PropertyAccessor
+     * @var PropertyAccessorInterface
      */
     private $accessor;
 
     /**
-     * @var PropertyPath[][][]
+     * @var PropertyPathInterface[][][]
      */
     private $cachedLocalePropertyPaths = [];
 
     public function __construct(
         ClassMetadataFactoryInterface $metadataFactory,
         array $fallbackLocales = [],
-        PropertyAccessor $accessor = null
+        PropertyAccessorInterface $accessor = null
     ) {
         $this->metadataFactory = $metadataFactory;
         $this->fallbackLocales = $fallbackLocales;
