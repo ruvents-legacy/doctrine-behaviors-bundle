@@ -75,12 +75,12 @@ class TimestampListener implements EventSubscriber
             return;
         }
 
-        foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
-            if (!$timestamp->trackOnUpdate()) {
+        foreach ($metadata->getTimestampMappings() as $property => $mapping) {
+            if (!$mapping->trackOnUpdate()) {
                 continue;
             }
 
-            if ($timestamp->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+            if ($mapping->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
                 continue;
             }
 

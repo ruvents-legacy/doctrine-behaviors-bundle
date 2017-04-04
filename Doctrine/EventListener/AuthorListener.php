@@ -81,12 +81,12 @@ class AuthorListener implements EventSubscriber
             return;
         }
 
-        foreach ($metadata->getAuthorMappings() as $property => $author) {
-            if (!$author->trackOnUpdate()) {
+        foreach ($metadata->getAuthorMappings() as $property => $mapping) {
+            if (!$mapping->trackOnUpdate()) {
                 continue;
             }
 
-            if ($author->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
+            if ($mapping->onlyIfNull && null !== $entityMetadata->getFieldValue($entity, $property)) {
                 continue;
             }
 
