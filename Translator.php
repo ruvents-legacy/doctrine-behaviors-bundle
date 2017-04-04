@@ -28,7 +28,7 @@ class Translator implements TranslatorInterface
     /**
      * @var PropertyPath[][][]
      */
-    private $cachedLocalePaths = [];
+    private $cachedLocalePropertyPaths = [];
 
     public function __construct(
         ClassMetadataFactoryInterface $metadataFactory,
@@ -78,16 +78,22 @@ class Translator implements TranslatorInterface
         $locales = array_unique($locales);
 
         foreach ($locales as $locale) {
-            $path = $this->getLocalePath($metadata->getName(), $property, $mapping->path, $mapping->map, $locale);
+            $propertyPath = $this->getLocalePropertyPath(
+                $metadata->getName(),
+                $property,
+                $mapping->propertyPath,
+                $mapping->map,
+                $locale
+            );
 
-            if ($this->hasValue($entity, $path, $mapping->fallbackIfNull)) {
+            if ($this->hasValue($entity, $propertyPath, $mapping->fallbackIfNull)) {
                 $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
 
                 if (!$reflectionProperty->isPublic()) {
                     $reflectionProperty->setAccessible(true);
                 }
 
-                $reflectionProperty->setValue($entity, $this->accessor->getValue($entity, $path));
+                $reflectionProperty->setValue($entity, $this->accessor->getValue($entity, $propertyPath));
 
                 return;
             }
@@ -100,18 +106,18 @@ class Translator implements TranslatorInterface
 
     /**
      * @param object       $entity
-     * @param PropertyPath $path
+     * @param PropertyPath $propertyPath
      * @param bool         $fallbackIfNull
      *
      * @return bool
      */
-    private function hasValue($entity, PropertyPath $path, $fallbackIfNull)
+    private function hasValue($entity, PropertyPath $propertyPath, $fallbackIfNull)
     {
-        if (!$this->accessor->isReadable($entity, $path)) {
+        if (!$this->accessor->isReadable($entity, $propertyPath)) {
             return false;
         }
 
-        if ($fallbackIfNull && null === $this->accessor->getValue($entity, $path)) {
+        if ($fallbackIfNull && null === $this->accessor->getValue($entity, $propertyPath)) {
             return false;
         }
 
@@ -121,24 +127,24 @@ class Translator implements TranslatorInterface
     /**
      * @param string   $class
      * @param string   $property
-     * @param string   $pathTemplate
+     * @param string   $propertyPathTemplate
      * @param string[] $map
      * @param string   $locale
      *
      * @return PropertyPath
      */
-    private function getLocalePath($class, $property, $pathTemplate, array $map, $locale)
+    private function getLocalePropertyPath($class, $property, $propertyPathTemplate, array $map, $locale)
     {
-        if ($class && $property && isset($this->cachedLocalePaths[$class][$property][$locale])) {
-            return $this->cachedLocalePaths[$class][$property][$locale];
+        if ($class && $property && isset($this->cachedLocalePropertyPaths[$class][$property][$locale])) {
+            return $this->cachedLocalePropertyPaths[$class][$property][$locale];
         }
 
         if (isset($map[$locale])) {
-            $path = $map[$locale];
+            $propertyPath = $map[$locale];
         } else {
-            $path = str_replace(['%locale%', '%Locale%'], [$locale, ucfirst($locale)], $pathTemplate);
+            $propertyPath = str_replace(['%locale%', '%Locale%'], [$locale, ucfirst($locale)], $propertyPathTemplate);
         }
 
-        return $this->cachedLocalePaths[$class][$property][$locale] = new PropertyPath($path);
+        return $this->cachedLocalePropertyPaths[$class][$property][$locale] = new PropertyPath($propertyPath);
     }
 }

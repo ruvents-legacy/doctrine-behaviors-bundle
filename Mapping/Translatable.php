@@ -12,7 +12,7 @@ class Translatable
      * @Required
      * @var string
      */
-    public $path;
+    public $propertyPath;
 
     /**
      * @var array<string>
