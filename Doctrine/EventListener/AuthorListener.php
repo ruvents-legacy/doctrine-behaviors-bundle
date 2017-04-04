@@ -43,7 +43,7 @@ class AuthorListener implements EventSubscriber
             $metadata = $this->metadataFactory->getMetadataFor($entity);
 
             if ($metadata instanceof AuthorMetadataInterface) {
-                foreach ($metadata->getAuthorProperties() as $property => $author) {
+                foreach ($metadata->getAuthorMappings() as $property => $author) {
                     if (!$author->trackOnPersist()) {
                         continue;
                     }
@@ -71,7 +71,7 @@ class AuthorListener implements EventSubscriber
             $changed = false;
 
             if ($metadata instanceof AuthorMetadataInterface) {
-                foreach ($metadata->getAuthorProperties() as $property => $author) {
+                foreach ($metadata->getAuthorMappings() as $property => $author) {
                     if (!$author->trackOnUpdate()) {
                         continue;
                     }

@@ -8,19 +8,19 @@ interface TimestampMetadataInterface extends ClassMetadataInterface
 {
     /**
      * @param string    $property
-     * @param Timestamp $timestamp
+     * @param Timestamp $mapping
      */
-    public function addTimestampProperty($property, Timestamp $timestamp);
+    public function addTimestampMapping($property, Timestamp $mapping);
 
     /**
      * @return Timestamp[]
      */
-    public function getTimestampProperties();
+    public function getTimestampMappings();
 
     /**
      * @param string $property
      *
      * @return bool
      */
-    public function isTimestampProperty($property);
+    public function hasTimestampMapping($property);
 }

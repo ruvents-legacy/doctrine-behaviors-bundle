@@ -49,7 +49,7 @@ class Translator implements TranslatorInterface
             $metadata = $this->metadataFactory->getMetadataFor($entity);
 
             if ($metadata instanceof TranslatableMetadataInterface) {
-                foreach ($metadata->getTranslatablePropertiesConfigs() as $property => $config) {
+                foreach ($metadata->getTranslatableMappings() as $property => $mapping) {
                     $this->translateProperty($entity, $property, $locale);
                 }
             }
@@ -67,20 +67,20 @@ class Translator implements TranslatorInterface
             throw new \Exception();
         }
 
-        if (!$metadata->isPropertyTranslatable($property)) {
+        if (!$metadata->hasTranslatableMapping($property)) {
             throw new \Exception();
         }
 
-        $config = $metadata->getTranslatablePropertiesConfigs()[$property];
+        $mapping = $metadata->getTranslatableMappings()[$property];
 
         $locales = $this->fallbackLocales;
         array_unshift($locales, $locale);
         $locales = array_unique($locales);
 
         foreach ($locales as $locale) {
-            $path = $this->getLocalePath($metadata->getName(), $property, $config->path, $config->map, $locale);
+            $path = $this->getLocalePath($metadata->getName(), $property, $mapping->path, $mapping->map, $locale);
 
-            if ($this->hasValue($entity, $path, $config->fallbackIfNull)) {
+            if ($this->hasValue($entity, $path, $mapping->fallbackIfNull)) {
                 $reflectionProperty = $metadata->getReflectionClass()->getProperty($property);
 
                 if (!$reflectionProperty->isPublic()) {
@@ -92,7 +92,7 @@ class Translator implements TranslatorInterface
                 return;
             }
 
-            if (!$config->fallback) {
+            if (!$mapping->fallback) {
                 return;
             }
         }

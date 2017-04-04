@@ -36,7 +36,7 @@ class TimestampListener implements EventSubscriber
             $time = new \DateTime();
 
             if ($metadata instanceof TimestampMetadataInterface) {
-                foreach ($metadata->getTimestampProperties() as $property => $timestamp) {
+                foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
                     if (!$timestamp->trackOnPersist()) {
                         continue;
                     }
@@ -65,7 +65,7 @@ class TimestampListener implements EventSubscriber
             $changed = false;
 
             if ($metadata instanceof TimestampMetadataInterface) {
-                foreach ($metadata->getTimestampProperties() as $property => $timestamp) {
+                foreach ($metadata->getTimestampMappings() as $property => $timestamp) {
                     if (!$timestamp->trackOnUpdate()) {
                         continue;
                     }

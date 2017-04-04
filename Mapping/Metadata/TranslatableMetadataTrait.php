@@ -9,29 +9,29 @@ trait TranslatableMetadataTrait
     /**
      * @var Translatable[]
      */
-    public $translatablePropertiesConfigs = [];
+    public $translatableMappings = [];
 
     /**
-     * @see TranslatableMetadataInterface::addTranslatableConfig
+     * @see TranslatableMetadataInterface::addTranslatableMapping
      */
-    public function addTranslatableConfig($property, Translatable $config)
+    public function addTranslatableMapping($property, Translatable $mapping)
     {
-        $this->translatablePropertiesConfigs[$property] = $config;
+        $this->translatableMappings[$property] = $mapping;
     }
 
     /**
-     * @see TranslatableMetadataInterface::getTranslatablePropertiesConfigs
+     * @see TranslatableMetadataInterface::getTranslatableMappings
      */
-    public function getTranslatablePropertiesConfigs()
+    public function getTranslatableMappings()
     {
-        return $this->translatablePropertiesConfigs;
+        return $this->translatableMappings;
     }
 
     /**
-     * @see TranslatableMetadataInterface::isPropertyTranslatable
+     * @see TranslatableMetadataInterface::hasTranslatableMapping
      */
-    public function isPropertyTranslatable($property)
+    public function hasTranslatableMapping($property)
     {
-        return isset($this->translatablePropertiesConfigs[$property]);
+        return isset($this->translatableMappings[$property]);
     }
 }

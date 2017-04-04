@@ -35,19 +35,19 @@ class AnnotationLoader implements LoaderInterface
             foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
                 if ($annotation instanceof Timestamp) {
                     if ($metadata instanceof TimestampMetadataInterface) {
-                        $metadata->addTimestampProperty($property->getName(), $annotation);
+                        $metadata->addTimestampMapping($property->getName(), $annotation);
                     }
                 }
 
                 if ($annotation instanceof Author) {
                     if ($metadata instanceof AuthorMetadataInterface) {
-                        $metadata->addAuthorProperty($property->getName(), $annotation);
+                        $metadata->addAuthorMapping($property->getName(), $annotation);
                     }
                 }
 
                 if ($annotation instanceof Translatable) {
                     if ($metadata instanceof TranslatableMetadataInterface) {
-                        $metadata->addTranslatableConfig($property->getName(), $annotation);
+                        $metadata->addTranslatableMapping($property->getName(), $annotation);
                     }
                 }
             }

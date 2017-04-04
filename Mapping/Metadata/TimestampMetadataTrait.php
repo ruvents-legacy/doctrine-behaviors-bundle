@@ -9,29 +9,29 @@ trait TimestampMetadataTrait
     /**
      * @var Timestamp[]
      */
-    public $timestampProperties = [];
+    public $timestampMappings = [];
 
     /**
-     * @see TimestampMetadataInterface::addTimestampProperty
+     * @see TimestampMetadataInterface::addTimestampMapping
      */
-    public function addTimestampProperty($property, Timestamp $timestamp)
+    public function addTimestampMapping($property, Timestamp $mapping)
     {
-        $this->timestampProperties[$property] = $timestamp;
+        $this->timestampMappings[$property] = $mapping;
     }
 
     /**
-     * @see TimestampMetadataInterface::getTimestampProperties
+     * @see TimestampMetadataInterface::getTimestampMappings
      */
-    public function getTimestampProperties()
+    public function getTimestampMappings()
     {
-        return $this->timestampProperties;
+        return $this->timestampMappings;
     }
 
     /**
-     * @see TimestampMetadataInterface::isTimestampProperty
+     * @see TimestampMetadataInterface::hasTimestampMapping
      */
-    public function isTimestampProperty($property)
+    public function hasTimestampMapping($property)
     {
-        return isset($this->timestampProperties[$property]);
+        return isset($this->timestampMappings[$property]);
     }
 }

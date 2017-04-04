@@ -9,29 +9,29 @@ trait AuthorMetadataTrait
     /**
      * @var Author[]
      */
-    public $authorProperties = [];
+    public $authorMappings = [];
 
     /**
-     * @see AuthorMetadataInterface::addAuthorProperty
+     * @see AuthorMetadataInterface::addAuthorMapping
      */
-    public function addAuthorProperty($property, Author $author)
+    public function addAuthorMapping($property, Author $mapping)
     {
-        $this->authorProperties[$property] = $author;
+        $this->authorMappings[$property] = $mapping;
     }
 
     /**
-     * @see AuthorMetadataInterface::getAuthorProperties
+     * @see AuthorMetadataInterface::getAuthorMappings
      */
-    public function getAuthorProperties()
+    public function getAuthorMappings()
     {
-        return $this->authorProperties;
+        return $this->authorMappings;
     }
 
     /**
-     * @see AuthorMetadataInterface::isAuthorProperty
+     * @see AuthorMetadataInterface::hasAuthorMapping
      */
-    public function isAuthorProperty($property)
+    public function hasAuthorMapping($property)
     {
-        return isset($this->authorProperties[$property]);
+        return isset($this->authorMappings[$property]);
     }
 }

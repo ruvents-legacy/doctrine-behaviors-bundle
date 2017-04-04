@@ -8,19 +8,19 @@ interface AuthorMetadataInterface extends ClassMetadataInterface
 {
     /**
      * @param string $property
-     * @param Author $author
+     * @param Author $mapping
      */
-    public function addAuthorProperty($property, Author $author);
+    public function addAuthorMapping($property, Author $mapping);
 
     /**
      * @return Author[]
      */
-    public function getAuthorProperties();
+    public function getAuthorMappings();
 
     /**
      * @param string $property
      *
      * @return bool
      */
-    public function isAuthorProperty($property);
+    public function hasAuthorMapping($property);
 }

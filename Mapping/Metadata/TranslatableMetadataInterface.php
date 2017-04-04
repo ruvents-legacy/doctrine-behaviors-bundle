@@ -8,19 +8,19 @@ interface TranslatableMetadataInterface extends ClassMetadataInterface
 {
     /**
      * @param string       $property
-     * @param Translatable $config
+     * @param Translatable $mapping
      */
-    public function addTranslatableConfig($property, Translatable $config);
+    public function addTranslatableMapping($property, Translatable $mapping);
 
     /**
      * @return Translatable[]
      */
-    public function getTranslatablePropertiesConfigs();
+    public function getTranslatableMappings();
 
     /**
      * @param string $property
      *
      * @return bool
      */
-    public function isPropertyTranslatable($property);
+    public function hasTranslatableMapping($property);
 }
