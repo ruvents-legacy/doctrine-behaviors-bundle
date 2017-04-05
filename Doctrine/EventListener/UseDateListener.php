@@ -61,11 +61,7 @@ class UseDateListener implements EventSubscriber
             $date = $this->accessor->getValue($entity, $mapping->propertyPath);
             $value = $entityMetadata->getFieldValue($entity, $property);
 
-            $newValue = $value->setDate($date->format('Y'), $date->format('m'), $date->format('d'));
-
-            if ($newValue != $value) {
-                $entityMetadata->setFieldValue($entity, $property, $newValue);
-            }
+            $value->setDate($date->format('Y'), $date->format('m'), $date->format('d'));
         }
     }
 
