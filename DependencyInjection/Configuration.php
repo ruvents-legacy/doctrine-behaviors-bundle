@@ -12,36 +12,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ruvents_reform');
-
-        $rootNode
-            ->children()
-                ->arrayNode('timestamp')
-                    ->canBeEnabled()
-                ->end()
-                ->arrayNode('author')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('provider_id')
-                            ->isRequired()
-                            ->cannotBeEmpty()
-                        ->end()
-                    ->end()
-                ->end()
-                ->arrayNode('translatable')
-                    ->canBeEnabled()
-                    ->children()
-                        ->arrayNode('fallbacks')
-                            ->prototype('scalar')->end()
-                        ->end()
-                    ->end()
-                ->end()
-                ->arrayNode('use_date')
-                    ->canBeEnabled()
-                ->end()
+        return (new TreeBuilder())
+            ->root('ruvents_reform')
             ->end();
-
-        return $treeBuilder;
     }
 }

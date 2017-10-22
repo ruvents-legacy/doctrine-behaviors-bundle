@@ -2,10 +2,16 @@
 
 namespace Ruvents\DoctrineBundle\DependencyInjection;
 
-use Symfony\Component\Config\FileLocator;
+use Ruvents\DoctrineBundle\Annotations\EventListener;
+use Ruvents\DoctrineBundle\Annotations\Handler\AuthorHandler;
+use Ruvents\DoctrineBundle\Annotations\Handler\AuthorStrategy\AuthorStrategyInterface;
+use Ruvents\DoctrineBundle\Annotations\Handler\AuthorStrategy\TokenUserAuthorStrategy;
+use Ruvents\DoctrineBundle\Annotations\Handler\HandlerInterface;
+use Ruvents\DoctrineBundle\Annotations\Handler\PersistTimestampHandler;
+use Ruvents\DoctrineBundle\Annotations\Handler\TimestampStrategy\ImmutableTimestampStrategy;
+use Ruvents\DoctrineBundle\Annotations\Handler\TimestampStrategy\TimestampStrategyInterface;
+use Ruvents\DoctrineBundle\Annotations\Handler\UpdateTimestampHandler;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 class RuventsDoctrineExtension extends ConfigurableExtension
@@ -15,33 +21,33 @@ class RuventsDoctrineExtension extends ConfigurableExtension
      */
     public function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
-        $loader = new YamlFileLoader(
-            $container,
-            new FileLocator(__DIR__.'/../Resources/config')
-        );
+        $container->autowire(EventListener::class)
+            ->setPublic(false)
+            ->addTag('doctrine.event_subscriber');
 
-        $loader->load('common.yml');
+        $container->registerForAutoconfiguration(HandlerInterface::class)
+            ->addTag('ruwork_doctrine.annotations_handler');
 
-        if ($mergedConfig['timestamp']['enabled']) {
-            $loader->load('timestamp.yml');
-        }
+        $container->autowire(TokenUserAuthorStrategy::class)
+            ->setPublic(false);
 
-        if ($mergedConfig['author']['enabled']) {
-            $loader->load('author.yml');
+        $container->setAlias(AuthorStrategyInterface::class, TokenUserAuthorStrategy::class);
 
-            $container->findDefinition('ruvents_doctrine.doctrine.event_listener.author')
-                ->replaceArgument(1, new Reference($mergedConfig['author']['provider_id']));
-        }
+        $container->register(ImmutableTimestampStrategy::class)
+            ->setPublic(false);
 
-        if ($mergedConfig['translatable']['enabled']) {
-            $loader->load('translatable.yml');
+        $container->setAlias(TimestampStrategyInterface::class, ImmutableTimestampStrategy::class);
 
-            $container->findDefinition('ruvents_doctrine.translator')
-                ->replaceArgument(1, $mergedConfig['translatable']['fallbacks']);
-        }
+        $container->autowire(AuthorHandler::class)
+            ->setPublic(false)
+            ->addTag('ruwork_doctrine.annotations_handler');
 
-        if ($mergedConfig['use_date']['enabled']) {
-            $loader->load('use_date.yml');
-        }
+        $container->autowire(PersistTimestampHandler::class)
+            ->setPublic(false)
+            ->addTag('ruwork_doctrine.annotations_handler');
+
+        $container->autowire(UpdateTimestampHandler::class)
+            ->setPublic(false)
+            ->addTag('ruwork_doctrine.annotations_handler');
     }
 }

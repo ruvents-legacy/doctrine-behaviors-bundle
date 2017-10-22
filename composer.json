@@ -13,13 +13,9 @@
         "php": ">=5.5.9",
         "doctrine/dbal": "^2.5",
         "doctrine/orm": "^2.5",
-        "symfony/config": "^3.0",
-        "symfony/dependency-injection": "^3.0",
-        "symfony/http-kernel": "^3.0",
-        "symfony/yaml": "^3.0"
-    },
-    "require-dev": {
-        "matthiasnoback/symfony-config-test": "^2.1"
+        "symfony/config": "^3.3",
+        "symfony/dependency-injection": "^3.3",
+        "symfony/http-kernel": "^3.3"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3-dev"
+            "dev-master": "0.4-dev"
         }
     }
 }

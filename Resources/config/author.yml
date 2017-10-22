@@ -1,8 +1,0 @@
-services:
-  ruvents_doctrine.doctrine.event_listener.author:
-    class: Ruvents\DoctrineBundle\Doctrine\EventListener\AuthorListener
-    arguments:
-      - '@ruvents_doctrine.mapping.factory'
-      - ~
-    tags:
-      - { name: doctrine.event_subscriber }

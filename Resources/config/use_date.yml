@@ -1,7 +1,0 @@
-services:
-  ruvents_doctrine.doctrine.event_listener.use_date:
-    class: Ruvents\DoctrineBundle\Doctrine\EventListener\UseDateListener
-    arguments:
-      - '@ruvents_doctrine.mapping.factory'
-    tags:
-      - { name: doctrine.event_subscriber }

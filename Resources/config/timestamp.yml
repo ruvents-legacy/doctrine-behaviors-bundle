@@ -1,7 +1,0 @@
-services:
-  ruvents_doctrine.doctrine.event_listener.timestamp:
-    class: Ruvents\DoctrineBundle\Doctrine\EventListener\TimestampListener
-    arguments:
-      - '@ruvents_doctrine.mapping.factory'
-    tags:
-      - { name: doctrine.event_subscriber }
