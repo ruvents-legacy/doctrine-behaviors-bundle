@@ -2,6 +2,7 @@
 
 namespace Ruvents\DoctrineBundle\Annotations\Handler;
 
+use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Ruvents\DoctrineBundle\Annotations\Handler\AuthorStrategy\AuthorStrategyInterface;
@@ -23,9 +24,9 @@ class AuthorHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public static function supportsAnnotation($annotation, int $type): bool
+    public static function supportsAnnotation($annotation, int $target): bool
     {
-        return self::TYPE_PROPERTY === $type && $annotation instanceof Author;
+        return Target::TARGET_PROPERTY === $target && $annotation instanceof Author;
     }
 
     /**

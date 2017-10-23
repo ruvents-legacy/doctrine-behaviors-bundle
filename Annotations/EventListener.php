@@ -2,13 +2,13 @@
 
 namespace Ruvents\DoctrineBundle\Annotations;
 
+use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Psr\Container\ContainerInterface;
-use Ruvents\DoctrineBundle\Annotations\Handler\HandlerInterface;
 
 class EventListener implements EventSubscriber
 {
@@ -58,7 +58,7 @@ class EventListener implements EventSubscriber
     {
         $metadata = $args->getClassMetadata();
 
-        if ($metadata->isMappedSuperclass) {
+        if ($metadata->isMappedSuperclass || $metadata->isEmbeddedClass) {
             return;
         }
 
@@ -67,7 +67,7 @@ class EventListener implements EventSubscriber
 
         foreach ($this->reader->getClassAnnotations($reflectionClass) as $annotation) {
             foreach ($this->handlerClasses as $handler) {
-                if (call_user_func([$handler, 'supportsAnnotation'], $annotation, HandlerInterface::TYPE_CLASS)) {
+                if (call_user_func([$handler, 'supportsAnnotation'], $annotation, Target::TARGET_CLASS)) {
                     $this->getMap($handler, $name)->addClassAnnotation($annotation);
 
                     continue(2);
@@ -80,7 +80,7 @@ class EventListener implements EventSubscriber
 
             foreach ($this->reader->getPropertyAnnotations($reflectionProperty) as $annotation) {
                 foreach ($this->handlerClasses as $handler) {
-                    if (call_user_func([$handler, 'supportsAnnotation'], $annotation, HandlerInterface::TYPE_PROPERTY)) {
+                    if (call_user_func([$handler, 'supportsAnnotation'], $annotation, Target::TARGET_PROPERTY)) {
                         $this->getMap($handler, $name)->addPropertyAnnotation($property, $annotation);
 
                         continue(2);
@@ -89,11 +89,8 @@ class EventListener implements EventSubscriber
             }
         }
 
-        if (isset($this->events[Events::loadClassMetadata])) {
-            foreach ($this->events[Events::loadClassMetadata] as $handler => $nb) {
-                call_user_func([$this->container->get($handler), Events::loadClassMetadata],
-                    $args, $this->maps[$handler][$name]);
-            }
+        foreach ($this->events[Events::loadClassMetadata] ?? [] as $handler) {
+            $this->dispatchHandlerEvent(Events::loadClassMetadata, $handler, $args, $name);
         }
 
         $args->getEntityManager()
@@ -101,17 +98,30 @@ class EventListener implements EventSubscriber
             ->addEventListener(array_keys($this->events), $this);
     }
 
-    public function __call($name, $arguments)
+    public function __call($event, $arguments)
     {
-        $args = $arguments[0];
-
-        if ($args instanceof LifecycleEventArgs) {
-            $entity = get_class($args->getEntity());
+        if (!isset($this->events[$event])) {
+            throw new \BadMethodCallException(sprintf('Event "%s" is not registered.', $event));
         }
 
-        foreach ($this->events[$name] as $handler) {
-            call_user_func([$this->container->get($handler), $name],
-                $args, isset($entity) ? $this->maps[$handler][$entity] : $this->maps[$handler]);
+        $args = $arguments[0];
+        $entity = $args instanceof LifecycleEventArgs ? get_class($args->getEntity()) : null;
+
+        foreach ($this->events[$event] as $handler) {
+            $this->dispatchHandlerEvent($event, $handler, $args, $entity);
+        }
+    }
+
+    private function dispatchHandlerEvent($event, $handler, $args, $entity = null)
+    {
+        if (null === $entity) {
+            call_user_func([$this->container->get($handler), $event], $args, $this->maps[$handler]);
+
+            return;
+        }
+
+        if (isset($this->maps[$handler][$entity])) {
+            call_user_func([$this->container->get($handler), $event], $args, $this->maps[$handler][$entity]);
         }
     }
 
