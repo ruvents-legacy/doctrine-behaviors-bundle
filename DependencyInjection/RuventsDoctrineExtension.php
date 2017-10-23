@@ -10,9 +10,12 @@ use Ruvents\DoctrineBundle\Annotations\Handler\HandlerInterface;
 use Ruvents\DoctrineBundle\Annotations\Handler\PersistTimestampHandler;
 use Ruvents\DoctrineBundle\Annotations\Handler\TimestampStrategy\ImmutableTimestampStrategy;
 use Ruvents\DoctrineBundle\Annotations\Handler\TimestampStrategy\TimestampStrategyInterface;
+use Ruvents\DoctrineBundle\Annotations\Handler\TranslatableHandler;
 use Ruvents\DoctrineBundle\Annotations\Handler\UpdateTimestampHandler;
+use Ruvents\DoctrineBundle\Translations\TranslationsManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class RuventsDoctrineExtension extends ConfigurableExtension
 {
@@ -49,5 +52,14 @@ class RuventsDoctrineExtension extends ConfigurableExtension
         $container->autowire(UpdateTimestampHandler::class)
             ->setPublic(false)
             ->addTag('ruwork_doctrine.annotations_handler');
+
+        $container->autowire(TranslatableHandler::class)
+            ->setPublic(false)
+            ->addTag('ruwork_doctrine.annotations_handler');
+
+        $container->autowire(TranslationsManager::class)
+            ->setPublic(false)
+            ->setArgument('$defaultLocale', '%kernel.default_locale%')
+            ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST]);
     }
 }
