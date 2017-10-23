@@ -29,7 +29,9 @@ class AddAnnotationsHandlersPass implements CompilerPassInterface
             $class = $container->getDefinition($id)->getClass();
 
             if (!is_subclass_of($class,HandlerInterface::class)) {
-                throw new InvalidArgumentException(sprintf('Services tagged with "%s" must implement %s.', $tag, HandlerInterface::class));
+                throw new InvalidArgumentException(
+                    sprintf('Services tagged with "%s" must implement %s.', $tag, HandlerInterface::class)
+                );
             }
 
             $handlers[$container->getDefinition($id)->getClass()] = new Reference($id);

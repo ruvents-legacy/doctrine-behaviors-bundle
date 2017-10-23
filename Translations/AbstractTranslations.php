@@ -9,29 +9,12 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
      */
     private $currentLocale;
 
-    public function __construct()
-    {
-        $locales = $this->getLocales();
-
-        if ([] === $locales) {
-            throw new \LogicException('The TranslationsInterface::getLocales() method must return at least one value.');
-        }
-
-        $defaultLocale = \Locale::getDefault();
-
-        if (in_array($defaultLocale, $locales, true)) {
-            $this->currentLocale = $defaultLocale;
-        } else {
-            $this->currentLocale = reset($locales);
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
     public function setCurrentLocale(string $currentLocale)
     {
-        if (in_array($currentLocale, $this->getLocales(), true)) {
+        if (isset($this->getLocalesMap()[$currentLocale])) {
             $this->currentLocale = $currentLocale;
         }
     }
@@ -60,7 +43,7 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
      */
     public function getIterator(): \Generator
     {
-        foreach ($this->getLocales() as $locale) {
+        foreach ($this->getLocalesMap() as $locale => $nb) {
             yield $locale => $this->$locale;
         }
     }
