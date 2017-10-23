@@ -9,6 +9,11 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
      */
     private $currentLocale;
 
+    public function __construct()
+    {
+        $this->resetCurrentLocale();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -16,6 +21,12 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
     {
         if (isset($this->getLocalesMap()[$currentLocale])) {
             $this->currentLocale = $currentLocale;
+
+            return;
+        }
+
+        if (null === $this->currentLocale) {
+            $this->resetCurrentLocale();
         }
     }
 
@@ -46,5 +57,11 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
         foreach ($this->getLocalesMap() as $locale => $nb) {
             yield $locale => $this->$locale;
         }
+    }
+
+    private function resetCurrentLocale()
+    {
+        $localesMap = $this->getLocalesMap();
+        $this->currentLocale = key($localesMap);
     }
 }
