@@ -11,7 +11,19 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
 
     public function __construct()
     {
-        $this->currentLocale = \Locale::getDefault();
+        $locales = $this->getLocales();
+
+        if ([] === $locales) {
+            throw new \LogicException('The TranslationsInterface::getLocales() method must return at least one value.');
+        }
+
+        $defaultLocale = \Locale::getDefault();
+
+        if (in_array($defaultLocale, $locales, true)) {
+            $this->currentLocale = $defaultLocale;
+        } else {
+            $this->currentLocale = reset($locales);
+        }
     }
 
     /**

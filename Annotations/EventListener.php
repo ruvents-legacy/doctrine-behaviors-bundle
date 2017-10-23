@@ -90,7 +90,7 @@ class EventListener implements EventSubscriber
         }
 
         foreach ($this->events[Events::loadClassMetadata] ?? [] as $handler) {
-            $this->dispatchHandlerEvent(Events::loadClassMetadata, $handler, $args, $name);
+            $this->callHandlerListener(Events::loadClassMetadata, $handler, $args, $name);
         }
 
         $args->getEntityManager()
@@ -108,11 +108,11 @@ class EventListener implements EventSubscriber
         $entity = $args instanceof LifecycleEventArgs ? get_class($args->getEntity()) : null;
 
         foreach ($this->events[$event] as $handler) {
-            $this->dispatchHandlerEvent($event, $handler, $args, $entity);
+            $this->callHandlerListener($event, $handler, $args, $entity);
         }
     }
 
-    private function dispatchHandlerEvent($event, $handler, $args, $entity = null)
+    private function callHandlerListener($event, $handler, $args, $entity = null)
     {
         if (null === $entity) {
             call_user_func([$this->container->get($handler), $event], $args, $this->maps[$handler]);
