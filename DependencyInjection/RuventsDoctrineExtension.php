@@ -13,9 +13,11 @@ use Ruvents\DoctrineBundle\Annotations\Handler\TimestampStrategy\TimestampStrate
 use Ruvents\DoctrineBundle\Annotations\Handler\TranslatableHandler;
 use Ruvents\DoctrineBundle\Annotations\Handler\UpdateTimestampHandler;
 use Ruvents\DoctrineBundle\Translations\TranslationsManager;
+use Ruvents\DoctrineBundle\Validator\TranslationsValidator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Validator\Validation;
 
 class RuventsDoctrineExtension extends ConfigurableExtension
 {
@@ -61,5 +63,11 @@ class RuventsDoctrineExtension extends ConfigurableExtension
             ->setPublic(false)
             ->setArgument('$defaultLocale', '%kernel.default_locale%')
             ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST]);
+
+        if (class_exists(Validation::class)) {
+            $container->autowire(TranslationsValidator::class)
+                ->setPublic(false)
+                ->addTag('validator.constraint_validator');
+        }
     }
 }
