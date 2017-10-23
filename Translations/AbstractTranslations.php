@@ -2,7 +2,7 @@
 
 namespace Ruvents\DoctrineBundle\Translations;
 
-abstract class AbstractTranslations implements TranslationsInterface
+abstract class AbstractTranslations implements TranslationsInterface, \IteratorAggregate
 {
     /**
      * @var string
@@ -28,16 +28,28 @@ abstract class AbstractTranslations implements TranslationsInterface
     {
         $value = $this->{$this->currentLocale};
 
-        if (!empty($value) || !$fallback) {
+        if ($value) {
             return $value;
         }
 
-        foreach ($this->getLocales() as $locale) {
-            if (!empty($this->$locale)) {
-                return $this->$locale;
+        if ($fallback) {
+            foreach ($this as $value) {
+                if ($value) {
+                    return $value;
+                }
             }
         }
 
         return $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator(): \Generator
+    {
+        foreach ($this->getLocales() as $locale) {
+            yield $locale => $this->$locale;
+        }
     }
 }
