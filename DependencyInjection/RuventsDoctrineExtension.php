@@ -17,6 +17,7 @@ use Ruvents\DoctrineBundle\Validator\TranslationsValidator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validation;
 
 class RuventsDoctrineExtension extends ConfigurableExtension
@@ -33,19 +34,21 @@ class RuventsDoctrineExtension extends ConfigurableExtension
         $container->registerForAutoconfiguration(HandlerInterface::class)
             ->addTag('ruwork_doctrine.annotations_handler');
 
-        $container->autowire(TokenUserAuthorStrategy::class)
-            ->setPublic(false);
+        $container->autowire(AuthorHandler::class)
+            ->setPublic(false)
+            ->addTag('ruwork_doctrine.annotations_handler');
 
-        $container->setAlias(AuthorStrategyInterface::class, TokenUserAuthorStrategy::class);
+        if (class_exists(Security::class)) {
+            $container->autowire(TokenUserAuthorStrategy::class)
+                ->setPublic(false);
+
+            $container->setAlias(AuthorStrategyInterface::class, TokenUserAuthorStrategy::class);
+        }
 
         $container->register(ImmutableTimestampStrategy::class)
             ->setPublic(false);
 
         $container->setAlias(TimestampStrategyInterface::class, ImmutableTimestampStrategy::class);
-
-        $container->autowire(AuthorHandler::class)
-            ->setPublic(false)
-            ->addTag('ruwork_doctrine.annotations_handler');
 
         $container->autowire(PersistTimestampHandler::class)
             ->setPublic(false)
