@@ -3,13 +3,13 @@
 namespace Ruvents\DoctrineBundle\Validator;
 
 use Doctrine\Common\Annotations\Annotation\Target;
-use Symfony\Component\Validator\Constraints\Composite;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation()
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  */
-class Translations extends Composite
+class Translations extends Constraint
 {
     /**
      * @var array
@@ -27,13 +27,5 @@ class Translations extends Composite
     public function getRequiredOptions()
     {
         return ['locales'];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getCompositeOption()
-    {
-        return 'locales';
     }
 }
