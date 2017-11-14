@@ -13,6 +13,7 @@ use Ruvents\DoctrineBundle\Annotations\Handler\TimestampStrategy\TimestampStrate
 use Ruvents\DoctrineBundle\Annotations\Handler\TranslatableHandler;
 use Ruvents\DoctrineBundle\Annotations\Handler\UpdateTimestampHandler;
 use Ruvents\DoctrineBundle\Translations\TranslationsManager;
+use Ruvents\DoctrineBundle\Validator\CompositeValidator;
 use Ruvents\DoctrineBundle\Validator\TranslationsValidator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
@@ -69,6 +70,10 @@ class RuventsDoctrineExtension extends ConfigurableExtension
 
         if (class_exists(Validation::class)) {
             $container->autowire(TranslationsValidator::class)
+                ->setPublic(false)
+                ->addTag('validator.constraint_validator');
+
+            $container->autowire(CompositeValidator::class)
                 ->setPublic(false)
                 ->addTag('validator.constraint_validator');
         }
