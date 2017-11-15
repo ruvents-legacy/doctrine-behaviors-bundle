@@ -45,6 +45,13 @@ class UpdateTimestampHandler implements HandlerInterface
         $metadata = $args->getEntityManager()->getClassMetadata(get_class($entity));
 
         foreach ($map->getPropertyAnnotations() as $property => $annotations) {
+            /** @var UpdateTimestamp $annotation */
+            $annotation = reset($annotations);
+
+            if (!$annotation->overwrite && $metadata->getFieldValue($entity, $property)) {
+                return;
+            }
+
             $metadata->setFieldValue($entity, $property, $this->strategy->getTimestamp());
         }
     }

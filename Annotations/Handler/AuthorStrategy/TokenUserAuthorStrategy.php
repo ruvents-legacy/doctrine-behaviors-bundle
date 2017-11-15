@@ -23,6 +23,10 @@ class TokenUserAuthorStrategy implements AuthorStrategyInterface
      */
     public function getFieldAuthor(Author $annotation, string $type, $currentValue)
     {
+        if (!$annotation->overwrite && $currentValue) {
+            return $currentValue;
+        }
+
         $user = $this->getUser();
 
         if ($user instanceof UserInterface) {
@@ -41,6 +45,10 @@ class TokenUserAuthorStrategy implements AuthorStrategyInterface
      */
     public function getAssociationAuthor(Author $annotation, string $targetClass, $currentValue)
     {
+        if (!$annotation->overwrite && $currentValue) {
+            return $currentValue;
+        }
+
         $user = $this->getUser();
 
         if ($user instanceof $targetClass) {

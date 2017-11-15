@@ -8,4 +8,8 @@ namespace Ruvents\DoctrineBundle\Annotations\Mapping;
  */
 final class Author
 {
+    /**
+     * @var bool
+     */
+    public $overwrite = true;
 }
