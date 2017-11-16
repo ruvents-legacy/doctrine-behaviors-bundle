@@ -17,7 +17,7 @@ class AddAnnotationsHandlersPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition(EventListener::class)) {
+        if (!$container->has(EventListener::class)) {
             return;
         }
 
@@ -28,7 +28,7 @@ class AddAnnotationsHandlersPass implements CompilerPassInterface
         foreach ($handlerServices as $id => $attributes) {
             $class = $container->getDefinition($id)->getClass();
 
-            if (!is_subclass_of($class,HandlerInterface::class)) {
+            if (!is_subclass_of($class, HandlerInterface::class)) {
                 throw new InvalidArgumentException(
                     sprintf('Services tagged with "%s" must implement %s.', $tag, HandlerInterface::class)
                 );
@@ -38,7 +38,7 @@ class AddAnnotationsHandlersPass implements CompilerPassInterface
         }
 
         $container
-            ->getDefinition(EventListener::class)
+            ->findDefinition(EventListener::class)
             ->setArgument('$handlerClasses', array_keys($handlers))
             ->setArgument('$container', ServiceLocatorTagPass::register($container, $handlers));
     }
