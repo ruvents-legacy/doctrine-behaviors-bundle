@@ -5,6 +5,7 @@ namespace Ruvents\DoctrineBundle\Annotations;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
@@ -105,7 +106,7 @@ class EventListener implements EventSubscriber
         }
 
         $args = $arguments[0];
-        $entity = $args instanceof LifecycleEventArgs ? get_class($args->getEntity()) : null;
+        $entity = $args instanceof LifecycleEventArgs ? ClassUtils::getClass($args->getEntity()) : null;
 
         foreach ($this->events[$event] as $handler) {
             $this->callHandlerListener($event, $handler, $args, $entity);
