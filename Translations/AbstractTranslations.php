@@ -11,7 +11,7 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
 
     public function __construct()
     {
-        $this->resetCurrentLocale();
+        $this->ensureNonEmptyCurrentLocale();
     }
 
     /**
@@ -25,13 +25,13 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
             return;
         }
 
-        if (null === $this->currentLocale) {
-            $this->resetCurrentLocale();
-        }
+        $this->ensureNonEmptyCurrentLocale();
     }
 
     public function getCurrent(bool $fallback = true)
     {
+        $this->ensureNonEmptyCurrentLocale();
+
         $value = $this->{$this->currentLocale};
 
         if ($value) {
@@ -59,8 +59,12 @@ abstract class AbstractTranslations implements TranslationsInterface, \IteratorA
         }
     }
 
-    private function resetCurrentLocale()
+    private function ensureNonEmptyCurrentLocale()
     {
+        if (null !== $this->currentLocale) {
+            return;
+        }
+
         $localesMap = $this->getLocalesMap();
         $this->currentLocale = key($localesMap);
     }
