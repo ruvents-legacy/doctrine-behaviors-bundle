@@ -17,10 +17,6 @@ class CompositeValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Composite::class);
         }
 
-        if (null === $value) {
-            return;
-        }
-
         $this->context
             ->getValidator()
             ->inContext($this->context)
