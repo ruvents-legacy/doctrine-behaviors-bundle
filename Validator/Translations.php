@@ -30,6 +30,8 @@ class Translations extends AbstractComposite
             }
         }
 
+        unset($localeConstraints, $locales);
+
         parent::__construct($options);
     }
 
