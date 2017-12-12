@@ -19,3 +19,4 @@ enabled:
 
 disabled:
     - const_separation
+    - property_separation
