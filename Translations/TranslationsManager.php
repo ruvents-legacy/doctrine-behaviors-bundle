@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ruvents\DoctrineBundle\Translations;
 
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -7,6 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class TranslationsManager
 {
     private $requestStack;
+
     private $defaultLocale;
 
     /**

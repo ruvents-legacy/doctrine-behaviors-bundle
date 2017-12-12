@@ -13,6 +13,7 @@ use Ruvents\DoctrineBundle\Strategy\TimestampStrategy\TimestampStrategyInterface
 class UpdateTimestampListener implements EventSubscriber
 {
     private $factory;
+
     private $strategy;
 
     public function __construct(MetadataFactoryInterface $factory, TimestampStrategyInterface $strategy)

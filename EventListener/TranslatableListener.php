@@ -14,6 +14,7 @@ use Ruvents\DoctrineBundle\Translations\TranslationsManager;
 class TranslatableListener implements EventSubscriber
 {
     private $factory;
+
     private $manager;
 
     public function __construct(MetadataFactoryInterface $factory, TranslationsManager $manager)
@@ -46,7 +47,7 @@ class TranslatableListener implements EventSubscriber
                 $translationsClass = $entityMetadata->embeddedClasses[$property]['class'];
 
                 try {
-                    $value = new $translationsClass;
+                    $value = new $translationsClass();
                     $entityMetadata->setFieldValue($entity, $property, $value);
                 } catch (\Throwable $exception) {
                     throw new \UnexpectedValueException(sprintf('Failed to instantiate class "%s" for %s.%s@Translatable. Please, instantiate it manually in the constructor.', $translationsClass, $class, $property), 0, $exception);

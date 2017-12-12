@@ -13,6 +13,7 @@ use Ruvents\DoctrineBundle\Strategy\AuthorStrategy\AuthorStrategyInterface;
 class AuthorListener implements EventSubscriber
 {
     private $factory;
+
     private $strategy;
 
     public function __construct(MetadataFactoryInterface $factory, AuthorStrategyInterface $strategy)
@@ -31,7 +32,7 @@ class AuthorListener implements EventSubscriber
         ];
     }
 
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         $class = get_class($entity);

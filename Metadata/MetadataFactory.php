@@ -15,6 +15,7 @@ use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
 class MetadataFactory implements MetadataFactoryInterface
 {
     private $doctrine;
+
     private $annotationReader;
 
     public function __construct(ManagerRegistry $doctrine, Reader $annotationReader)
