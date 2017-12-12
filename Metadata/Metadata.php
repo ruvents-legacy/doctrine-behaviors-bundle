@@ -6,6 +6,7 @@ namespace Ruvents\DoctrineBundle\Metadata;
 
 use Ruvents\DoctrineBundle\Mapping\Author;
 use Ruvents\DoctrineBundle\Mapping\PersistTimestamp;
+use Ruvents\DoctrineBundle\Mapping\Translatable;
 use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
 
 final class Metadata
@@ -14,6 +15,7 @@ final class Metadata
     private $authors = [];
     private $persistTimestamps = [];
     private $updateTimestamps = [];
+    private $translatables = [];
 
     public function __construct(string $class)
     {
@@ -62,5 +64,18 @@ final class Metadata
     public function addUpdateTimestamp(string $property, UpdateTimestamp $updateTimestamp): void
     {
         $this->updateTimestamps[$property] = $updateTimestamp;
+    }
+
+    /**
+     * @return Translatable[]
+     */
+    public function getTranslatables(): array
+    {
+        return $this->translatables;
+    }
+
+    public function addTranslatable(string $property, Translatable $translatable): void
+    {
+        $this->translatables[$property] = $translatable;
     }
 }

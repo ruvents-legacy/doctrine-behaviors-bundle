@@ -20,7 +20,11 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->scalarNode('metadata_cache')
                         ->cannotBeEmpty()
-                        ->defaultValue('cache.app');
+                        ->defaultValue('cache.app')
+                    ->end()
+                    ->scalarNode('default_locale')
+                        ->cannotBeEmpty()
+                        ->defaultValue('%kernel.default_locale%');
         // @formatter:on
 
         return $builder;

@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Ruvents\DoctrineBundle\Mapping\Author;
 use Ruvents\DoctrineBundle\Mapping\PersistTimestamp;
+use Ruvents\DoctrineBundle\Mapping\Translatable;
 use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
 
 class MetadataFactory implements MetadataFactoryInterface
@@ -38,6 +39,10 @@ class MetadataFactory implements MetadataFactoryInterface
         $metadata = new Metadata($class);
 
         foreach ($entityMetadata->getFieldNames() as $property) {
+            if (!$reflectionClass->hasProperty($property)) {
+                continue;
+            }
+
             $reflectionProperty = $reflectionClass->getProperty($property);
 
             foreach ($this->annotationReader->getPropertyAnnotations($reflectionProperty) as $annotation) {
@@ -52,11 +57,29 @@ class MetadataFactory implements MetadataFactoryInterface
         }
 
         foreach ($entityMetadata->getAssociationNames() as $property) {
+            if (!$reflectionClass->hasProperty($property)) {
+                continue;
+            }
+
             $reflectionProperty = $reflectionClass->getProperty($property);
 
             foreach ($this->annotationReader->getPropertyAnnotations($reflectionProperty) as $annotation) {
                 if ($annotation instanceof Author) {
                     $metadata->addAuthor($property, $annotation);
+                }
+            }
+        }
+
+        foreach ($entityMetadata->embeddedClasses as $property => $mapping) {
+            if (!$reflectionClass->hasProperty($property)) {
+                continue;
+            }
+
+            $reflectionProperty = $reflectionClass->getProperty($property);
+
+            foreach ($this->annotationReader->getPropertyAnnotations($reflectionProperty) as $annotation) {
+                if ($annotation instanceof Translatable) {
+                    $metadata->addTranslatable($property, $annotation);
                 }
             }
         }
