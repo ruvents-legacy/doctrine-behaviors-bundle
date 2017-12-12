@@ -1,0 +1,21 @@
+preset: symfony
+
+enabled:
+    - declare_strict_types
+    - dir_constant
+    - ereg_to_preg
+    - function_to_constant
+    - is_null
+    - mb_str_functions
+    - modernize_types_casting
+    - no_homoglyph_names
+    - no_php4_constructor
+    - no_unreachable_default_argument_value
+    - non_printable_character
+    - php_unit_construct
+    - random_api_migration
+    - strict_comparison
+    - void_return
+
+disabled:
+    - const_separation
