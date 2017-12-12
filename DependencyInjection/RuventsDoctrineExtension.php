@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ruvents\DoctrineBundle\DependencyInjection;
 
 use Ruvents\DoctrineBundle\Metadata\CachedMetadataFactory;
@@ -15,7 +17,7 @@ class RuventsDoctrineExtension extends ConfigurableExtension
     /**
      * {@inheritdoc}
      */
-    public function loadInternal(array $config, ContainerBuilder $container)
+    public function loadInternal(array $config, ContainerBuilder $container): void
     {
         (new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config')))
             ->load('services.php');

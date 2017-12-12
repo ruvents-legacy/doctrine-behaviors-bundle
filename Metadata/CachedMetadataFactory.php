@@ -11,7 +11,9 @@ class CachedMetadataFactory implements MetadataFactoryInterface
     private const PREFIX = 'ruvents_doctrine_bundle.metadata.';
 
     private $factory;
+
     private $cache;
+
     private $debug;
 
     public function __construct(MetadataFactoryInterface $factory, CacheItemPoolInterface $cache, bool $debug = false)

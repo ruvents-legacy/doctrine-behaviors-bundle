@@ -18,7 +18,7 @@ use Ruvents\DoctrineBundle\Strategy\TimestampStrategy\TimestampStrategyInterface
 use Ruvents\DoctrineBundle\Translations\TranslationsManager;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-return function (ContainerConfigurator $container) {
+return function (ContainerConfigurator $container): void {
     $services = $container->services()
         ->defaults()
         ->private();

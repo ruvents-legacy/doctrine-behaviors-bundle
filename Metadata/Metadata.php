@@ -12,9 +12,13 @@ use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
 final class Metadata
 {
     private $class;
+
     private $authors = [];
+
     private $persistTimestamps = [];
+
     private $updateTimestamps = [];
+
     private $translatables = [];
 
     public function __construct(string $class)
