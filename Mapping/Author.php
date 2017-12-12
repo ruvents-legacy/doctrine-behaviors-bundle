@@ -1,12 +1,12 @@
 <?php
 
-namespace Ruvents\DoctrineBundle\Annotations\Mapping;
+namespace Ruvents\DoctrineBundle\Mapping;
 
 /**
  * @Annotation()
  * @Target("PROPERTY")
  */
-final class UpdateTimestamp
+final class Author
 {
     /**
      * @var bool

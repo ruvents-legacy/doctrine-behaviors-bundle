@@ -10,10 +10,19 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        return (new TreeBuilder())
-            ->root('ruvents_reform')
-            ->end();
+        $builder = new TreeBuilder();
+
+        // @formatter:off
+        $builder
+            ->root('ruvents_doctrine')
+                ->children()
+                    ->scalarNode('metadata_cache')
+                        ->cannotBeEmpty()
+                        ->defaultValue('cache.app');
+        // @formatter:on
+
+        return $builder;
     }
 }

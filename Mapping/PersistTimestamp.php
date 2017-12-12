@@ -1,6 +1,6 @@
 <?php
 
-namespace Ruvents\DoctrineBundle\Annotations\Mapping;
+namespace Ruvents\DoctrineBundle\Mapping;
 
 /**
  * @Annotation()
