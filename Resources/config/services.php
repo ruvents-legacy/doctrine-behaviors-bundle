@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Ruvents\DoctrineBundle\Command\SearchIndexUpdateCommand;
 use Ruvents\DoctrineBundle\EventListener\AuthorListener;
 use Ruvents\DoctrineBundle\EventListener\PersistTimestampListener;
 use Ruvents\DoctrineBundle\EventListener\SearchIndexListener;
@@ -84,4 +85,11 @@ return function (ContainerConfigurator $container): void {
             '$strategy' => ref(TimestampStrategyInterface::class),
         ])
         ->tag('doctrine.event_listener', ['event' => 'preUpdate', 'lazy' => true]);
+
+    $services->set(SearchIndexUpdateCommand::class)
+        ->args([
+            '$metadataFactory' => ref(MetadataFactoryInterface::class),
+            '$doctrine' => ref('doctrine'),
+        ])
+        ->tag('console.command');
 };
