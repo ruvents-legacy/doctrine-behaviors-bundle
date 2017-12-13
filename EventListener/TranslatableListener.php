@@ -4,33 +4,37 @@ declare(strict_types=1);
 
 namespace Ruvents\DoctrineBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
 use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
 use Ruvents\DoctrineBundle\Translations\TranslationsInterface;
-use Ruvents\DoctrineBundle\Translations\TranslationsManager;
+use Symfony\Component\HttpFoundation\RequestStack;
 
-class TranslatableListener implements EventSubscriber
+class TranslatableListener
 {
     private $factory;
-    private $manager;
-
-    public function __construct(MetadataFactoryInterface $factory, TranslationsManager $manager)
-    {
-        $this->factory = $factory;
-        $this->manager = $manager;
-    }
+    private $requestStack;
+    private $defaultLocale;
 
     /**
-     * {@inheritdoc}
+     * @var \SplObjectStorage|TranslationsInterface[]
      */
-    public function getSubscribedEvents()
+    private $storage;
+
+    public function __construct(MetadataFactoryInterface $factory, RequestStack $requestStack, string $defaultLocale)
     {
-        return [
-            Events::prePersist,
-            Events::postLoad,
-        ];
+        $this->factory = $factory;
+        $this->requestStack = $requestStack;
+        $this->defaultLocale = $defaultLocale;
+        $this->storage = new \SplObjectStorage();
+    }
+
+    public function onKernelRequest(): void
+    {
+        $currentLocale = $this->getCurrentLocale();
+
+        foreach ($this->storage as $translations) {
+            $translations->setCurrentLocale($currentLocale);
+        }
     }
 
     public function prePersist(LifecycleEventArgs $args): void
@@ -46,12 +50,24 @@ class TranslatableListener implements EventSubscriber
                 throw new \UnexpectedValueException(sprintf('Value of %s.%s@Translatable must be an instance of "%s", "%s" given.', $class, $property, TranslationsInterface::class, is_object($value) ? get_class($value) : gettype($value)));
             }
 
-            $this->manager->register($value);
+            if (!$this->storage->contains($value)) {
+                $value->setCurrentLocale($this->getCurrentLocale());
+                $this->storage->attach($value);
+            }
         }
     }
 
     public function postLoad(LifecycleEventArgs $args): void
     {
         $this->prePersist($args);
+    }
+
+    private function getCurrentLocale(): string
+    {
+        if (null !== $request = $this->requestStack->getCurrentRequest()) {
+            return $request->getLocale();
+        }
+
+        return $this->defaultLocale;
     }
 }

@@ -15,7 +15,6 @@ use Ruvents\DoctrineBundle\Strategy\AuthorStrategy\AuthorStrategyInterface;
 use Ruvents\DoctrineBundle\Strategy\AuthorStrategy\SecurityTokenAuthorStrategy;
 use Ruvents\DoctrineBundle\Strategy\TimestampStrategy\FieldTypeTimestampStrategy;
 use Ruvents\DoctrineBundle\Strategy\TimestampStrategy\TimestampStrategyInterface;
-use Ruvents\DoctrineBundle\Translations\TranslationsManager;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 return function (ContainerConfigurator $container): void {
@@ -53,32 +52,28 @@ return function (ContainerConfigurator $container): void {
             '$factory' => ref(MetadataFactoryInterface::class),
             '$strategy' => ref(AuthorStrategyInterface::class),
         ])
-        ->tag('doctrine.event_subscriber');
+        ->tag('doctrine.event_listener', ['event' => 'prePersist', 'lazy' => true]);
 
     $services->set(PersistTimestampListener::class)
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
             '$strategy' => ref(TimestampStrategyInterface::class),
         ])
-        ->tag('doctrine.event_subscriber');
+        ->tag('doctrine.event_listener', ['event' => 'prePersist', 'lazy' => true]);
 
     $services->set(UpdateTimestampListener::class)
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
             '$strategy' => ref(TimestampStrategyInterface::class),
         ])
-        ->tag('doctrine.event_subscriber');
-
-    $services->set(TranslationsManager::class)
-        ->args([
-            '$requestStack' => ref('request_stack'),
-        ])
-        ->tag('kernel.event_listener', ['event' => KernelEvents::REQUEST]);
+        ->tag('doctrine.event_listener', ['event' => 'preUpdate', 'lazy' => true]);
 
     $services->set(TranslatableListener::class)
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
-            '$manager' => ref(TranslationsManager::class),
+            '$requestStack' => ref('request_stack'),
         ])
-        ->tag('doctrine.event_subscriber');
+        ->tag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
+        ->tag('doctrine.event_listener', ['event' => 'prePersist', 'lazy' => true])
+        ->tag('doctrine.event_listener', ['event' => 'postLoad', 'lazy' => true]);
 };

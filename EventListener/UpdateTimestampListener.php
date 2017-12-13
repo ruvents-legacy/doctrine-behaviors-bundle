@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Ruvents\DoctrineBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
 use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
 use Ruvents\DoctrineBundle\Strategy\TimestampStrategy\TimestampStrategyInterface;
 
-class UpdateTimestampListener implements EventSubscriber
+class UpdateTimestampListener
 {
     private $factory;
 
@@ -20,16 +18,6 @@ class UpdateTimestampListener implements EventSubscriber
     {
         $this->factory = $factory;
         $this->strategy = $strategy;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::preUpdate,
-        ];
     }
 
     public function preUpdate(LifecycleEventArgs $args): void

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Ruvents\DoctrineBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
 use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
 use Ruvents\DoctrineBundle\Strategy\AuthorStrategy\AuthorStrategyInterface;
 
-class AuthorListener implements EventSubscriber
+class AuthorListener
 {
     private $factory;
 
@@ -20,16 +18,6 @@ class AuthorListener implements EventSubscriber
     {
         $this->factory = $factory;
         $this->strategy = $strategy;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::prePersist,
-        ];
     }
 
     public function prePersist(LifecycleEventArgs $args): void
