@@ -27,7 +27,7 @@ class SearchIndexUpdateCommand extends Command
         $this->addArgument('class', InputArgument::REQUIRED);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $class = $input->getArgument('class');
         $manager = $this->doctrine->getManagerForClass($class);
