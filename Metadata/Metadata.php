@@ -6,20 +6,18 @@ namespace Ruvents\DoctrineBundle\Metadata;
 
 use Ruvents\DoctrineBundle\Mapping\Author;
 use Ruvents\DoctrineBundle\Mapping\PersistTimestamp;
+use Ruvents\DoctrineBundle\Mapping\SearchIndex;
 use Ruvents\DoctrineBundle\Mapping\Translatable;
 use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
 
 final class Metadata
 {
     private $class;
-
     private $authors = [];
-
     private $persistTimestamps = [];
-
-    private $updateTimestamps = [];
-
+    private $searchIndexes = [];
     private $translatables = [];
+    private $updateTimestamps = [];
 
     public function __construct(string $class)
     {
@@ -58,16 +56,16 @@ final class Metadata
     }
 
     /**
-     * @return UpdateTimestamp[]
+     * @return SearchIndex[]
      */
-    public function getUpdateTimestamps(): array
+    public function getSearchIndexes(): array
     {
-        return $this->updateTimestamps;
+        return $this->searchIndexes;
     }
 
-    public function addUpdateTimestamp(string $property, UpdateTimestamp $updateTimestamp): void
+    public function addSearchIndex(string $property, SearchIndex $searchIndex): void
     {
-        $this->updateTimestamps[$property] = $updateTimestamp;
+        $this->searchIndexes[$property] = $searchIndex;
     }
 
     /**
@@ -81,5 +79,18 @@ final class Metadata
     public function addTranslatable(string $property, Translatable $translatable): void
     {
         $this->translatables[$property] = $translatable;
+    }
+
+    /**
+     * @return UpdateTimestamp[]
+     */
+    public function getUpdateTimestamps(): array
+    {
+        return $this->updateTimestamps;
+    }
+
+    public function addUpdateTimestamp(string $property, UpdateTimestamp $updateTimestamp): void
+    {
+        $this->updateTimestamps[$property] = $updateTimestamp;
     }
 }

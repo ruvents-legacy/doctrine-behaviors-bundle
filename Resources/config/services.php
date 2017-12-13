@@ -6,6 +6,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Ruvents\DoctrineBundle\EventListener\AuthorListener;
 use Ruvents\DoctrineBundle\EventListener\PersistTimestampListener;
+use Ruvents\DoctrineBundle\EventListener\SearchIndexListener;
 use Ruvents\DoctrineBundle\EventListener\TranslatableListener;
 use Ruvents\DoctrineBundle\EventListener\UpdateTimestampListener;
 use Ruvents\DoctrineBundle\Metadata\CachedMetadataFactory;
@@ -61,11 +62,11 @@ return function (ContainerConfigurator $container): void {
         ])
         ->tag('doctrine.event_listener', ['event' => 'prePersist', 'lazy' => true]);
 
-    $services->set(UpdateTimestampListener::class)
+    $services->set(SearchIndexListener::class)
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
-            '$strategy' => ref(TimestampStrategyInterface::class),
         ])
+        ->tag('doctrine.event_listener', ['event' => 'prePersist', 'lazy' => true])
         ->tag('doctrine.event_listener', ['event' => 'preUpdate', 'lazy' => true]);
 
     $services->set(TranslatableListener::class)
@@ -76,4 +77,11 @@ return function (ContainerConfigurator $container): void {
         ->tag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
         ->tag('doctrine.event_listener', ['event' => 'prePersist', 'lazy' => true])
         ->tag('doctrine.event_listener', ['event' => 'postLoad', 'lazy' => true]);
+
+    $services->set(UpdateTimestampListener::class)
+        ->args([
+            '$factory' => ref(MetadataFactoryInterface::class),
+            '$strategy' => ref(TimestampStrategyInterface::class),
+        ])
+        ->tag('doctrine.event_listener', ['event' => 'preUpdate', 'lazy' => true]);
 };

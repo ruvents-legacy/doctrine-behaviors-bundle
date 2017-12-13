@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Ruvents\DoctrineBundle\Mapping\Author;
 use Ruvents\DoctrineBundle\Mapping\PersistTimestamp;
+use Ruvents\DoctrineBundle\Mapping\SearchIndex;
 use Ruvents\DoctrineBundle\Mapping\Translatable;
 use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
 
@@ -51,6 +52,8 @@ class MetadataFactory implements MetadataFactoryInterface
                     $metadata->addAuthor($property, $annotation);
                 } elseif ($annotation instanceof PersistTimestamp) {
                     $metadata->addPersistTimestamp($property, $annotation);
+                } elseif ($annotation instanceof SearchIndex) {
+                    $metadata->addSearchIndex($property, $annotation);
                 } elseif ($annotation instanceof UpdateTimestamp) {
                     $metadata->addUpdateTimestamp($property, $annotation);
                 }
