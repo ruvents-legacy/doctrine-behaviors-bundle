@@ -8,52 +8,18 @@ abstract class AbstractTranslations implements TranslationsInterface
 {
     private $currentLocale;
 
-    public function getCurrentLocale(): string
-    {
-        return $this->currentLocale ?? $this->getDefaultCurrentLocale();
-    }
-
-    public function setCurrentLocale(string $locale)
-    {
-        if ($this->has($locale)) {
-            $this->currentLocale = $locale;
-        }
-
-        return $this;
-    }
-
     public function has(string $locale): bool
     {
         return property_exists($this, $locale);
     }
 
-    public function get(string $locale = null)
+    public function get(string $locale)
     {
-        $locale = $locale ?? $this->getCurrentLocale();
-
         if (!$this->has($locale)) {
             throw new \OutOfBoundsException(sprintf('Class "%s" does not support locale "%s".', get_class($this), $locale));
         }
 
         return $this->$locale;
-    }
-
-    public function getCurrent(bool $fallback = true)
-    {
-        $currentLocale = $this->getCurrentLocale();
-        $fallbackLocales = [$currentLocale => true];
-
-        if ($fallback) {
-            $fallbackLocales = $fallbackLocales + array_flip($this->getFallbackLocales());
-        }
-
-        foreach ($fallbackLocales as $locale => $nb) {
-            if ($current = $this->get($locale)) {
-                break;
-            }
-        }
-
-        return $current ?? null;
     }
 
     public function set(string $locale, $value)
@@ -67,10 +33,46 @@ abstract class AbstractTranslations implements TranslationsInterface
         return $this;
     }
 
-    protected function getFallbackLocales(): array
+    public function setCurrentLocale(string $locale)
     {
-        return [];
+        if ($this->has($locale)) {
+            $this->currentLocale = $locale;
+        }
+
+        return $this;
     }
 
-    abstract protected function getDefaultCurrentLocale(): string;
+    public function getCurrent(bool $fallback = true)
+    {
+        $currentLocale = $this->getCurrentLocale();
+
+        if ($current = $this->get($currentLocale)) {
+            return $current;
+        }
+
+        if ($fallback) {
+            foreach ($this->getFallbackLocales() as $locale) {
+                if ($current = $this->get($locale)) {
+                    break;
+                }
+            }
+        }
+
+        return $current;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getCurrent();
+    }
+
+    protected function getCurrentLocale(): string
+    {
+        return $this->currentLocale ?? $this->getFallbackLocales()->current();
+    }
+
+    /**
+     * @return \Generator|string[]
+     */
+    abstract protected function getFallbackLocales(): \Generator;
 }

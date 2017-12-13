@@ -6,9 +6,11 @@ namespace Ruvents\DoctrineBundle\Translations;
 
 interface TranslationsInterface
 {
+    public function setCurrentLocale(string $locale);
+
     public function has(string $locale): bool;
 
-    public function get(string $locale = null);
+    public function get(string $locale);
 
-    public function setCurrentLocale(string $locale);
+    public function getCurrent();
 }
