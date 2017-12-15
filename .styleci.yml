@@ -6,7 +6,6 @@ enabled:
     - ereg_to_preg
     - function_to_constant
     - is_null
-    - mb_str_functions
     - modernize_types_casting
     - no_homoglyph_names
     - no_php4_constructor
