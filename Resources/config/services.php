@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\ORM\Events as ORMEvents;
-use Ruwork\DoctrineBehaviorsBundle\Command\SearchIndexUpdateCommand;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\AuthorListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\PersistTimestampListener;
-use Ruwork\DoctrineBehaviorsBundle\EventListener\SearchIndexListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\TranslatableListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\UpdateTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
@@ -69,15 +67,6 @@ return function (ContainerConfigurator $container): void {
         ])
         ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true]);
 
-    $services->set(SearchIndexListener::class)
-        ->args([
-            '$factory' => ref(MetadataFactoryInterface::class),
-            '$accessor' => ref('property_accessor')->nullOnInvalid(),
-        ])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::loadClassMetadata, 'lazy' => true])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::preUpdate, 'lazy' => true]);
-
     $services->set(TranslatableListener::class)
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
@@ -93,11 +82,4 @@ return function (ContainerConfigurator $container): void {
             '$strategy' => ref(TimestampStrategyInterface::class),
         ])
         ->tag('doctrine.event_listener', ['event' => ORMEvents::preUpdate, 'lazy' => true]);
-
-    $services->set(SearchIndexUpdateCommand::class)
-        ->args([
-            '$metadataFactory' => ref(MetadataFactoryInterface::class),
-            '$doctrine' => ref('doctrine'),
-        ])
-        ->tag('console.command');
 };
