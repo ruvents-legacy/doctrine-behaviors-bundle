@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\EventListener;
+namespace Ruwork\DoctrineBehaviorsBundle\EventListener;
 
 use App\EventListener\DoctrineListener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Ruvents\DoctrineBundle\Doctrine\Types\TsvectorType;
-use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
+use Ruwork\DoctrineBehaviorsBundle\Doctrine\Types\TsvectorType;
+use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 

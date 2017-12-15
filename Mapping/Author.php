@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Mapping;
+namespace Ruwork\DoctrineBehaviorsBundle\Mapping;
 
 /**
  * @Annotation()

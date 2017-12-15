@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Validator;
+namespace Ruwork\DoctrineBehaviorsBundle\Validator;
 
 use Symfony\Component\Validator\Constraints\Composite as AbstractComposite;
 

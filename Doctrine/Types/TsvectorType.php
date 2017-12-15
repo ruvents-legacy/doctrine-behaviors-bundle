@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Doctrine\Types;
+namespace Ruwork\DoctrineBehaviorsBundle\Doctrine\Types;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;

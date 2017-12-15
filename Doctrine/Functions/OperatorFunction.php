@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Doctrine\Functions;
+namespace Ruwork\DoctrineBehaviorsBundle\Doctrine\Functions;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\Node;

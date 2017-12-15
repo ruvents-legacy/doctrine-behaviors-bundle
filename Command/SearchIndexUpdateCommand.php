@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Command;
+namespace Ruwork\DoctrineBehaviorsBundle\Command;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
-use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
+use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,7 +22,7 @@ class SearchIndexUpdateCommand extends Command
         $this->doctrine = $doctrine;
         $this->metadataFactory = $metadataFactory;
 
-        parent::__construct('ruvents-doctrine:search-index:update');
+        parent::__construct('ruwork-doctrine:search-index:update');
 
         $this->addArgument('class', InputArgument::REQUIRED);
     }

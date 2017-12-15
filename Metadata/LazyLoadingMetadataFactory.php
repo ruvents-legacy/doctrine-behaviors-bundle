@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Metadata;
+namespace Ruwork\DoctrineBehaviorsBundle\Metadata;
 
 use Psr\Cache\CacheItemPoolInterface;
 

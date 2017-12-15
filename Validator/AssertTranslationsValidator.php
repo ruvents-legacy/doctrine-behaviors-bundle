@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Validator;
+namespace Ruwork\DoctrineBehaviorsBundle\Validator;
 
-use Ruvents\DoctrineBundle\Translations\TranslationsInterface;
+use Ruwork\DoctrineBehaviorsBundle\Translations\TranslationsInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;

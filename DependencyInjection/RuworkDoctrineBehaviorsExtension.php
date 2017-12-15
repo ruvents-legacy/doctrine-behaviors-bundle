@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\DependencyInjection;
+namespace Ruwork\DoctrineBehaviorsBundle\DependencyInjection;
 
-use Ruvents\DoctrineBundle\EventListener\TranslatableListener;
-use Ruvents\DoctrineBundle\Metadata\LazyLoadingMetadataFactory;
+use Ruwork\DoctrineBehaviorsBundle\EventListener\TranslatableListener;
+use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class RuventsDoctrineExtension extends ConfigurableExtension
+class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
 {
     /**
      * {@inheritdoc}

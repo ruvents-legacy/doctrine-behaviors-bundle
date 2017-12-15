@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\EventListener;
+namespace Ruwork\DoctrineBehaviorsBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
-use Ruvents\DoctrineBundle\Translations\TranslationsInterface;
+use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
+use Ruwork\DoctrineBehaviorsBundle\Translations\TranslationsInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class TranslatableListener

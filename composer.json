@@ -1,6 +1,6 @@
 {
-    "name": "ruvents/doctrine-bundle",
-    "description": "RUVENTS Doctrine Bundle",
+    "name": "ruwork/doctrine-behaviors-bundle",
+    "description": "Ruwork Doctrine Behaviors Bundle",
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ruvents\\DoctrineBundle\\": ""
+            "Ruwork\\DoctrineBehaviorsBundle\\": ""
         },
         "exclude-from-classmap": [
             "/Tests/"
@@ -27,7 +27,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.5-dev"
+            "dev-master": "0.6-dev"
         }
     }
 }

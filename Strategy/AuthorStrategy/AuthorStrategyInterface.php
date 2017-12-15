@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Strategy\AuthorStrategy;
+namespace Ruwork\DoctrineBehaviorsBundle\Strategy\AuthorStrategy;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 

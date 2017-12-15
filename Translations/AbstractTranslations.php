@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Translations;
+namespace Ruwork\DoctrineBehaviorsBundle\Translations;
 
 abstract class AbstractTranslations implements TranslationsInterface
 {

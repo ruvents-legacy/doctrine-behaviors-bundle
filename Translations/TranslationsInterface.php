@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Translations;
+namespace Ruwork\DoctrineBehaviorsBundle\Translations;
 
 interface TranslationsInterface
 {

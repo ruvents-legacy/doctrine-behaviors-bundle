@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Metadata;
+namespace Ruwork\DoctrineBehaviorsBundle\Metadata;
 
 use Doctrine\Common\Annotations\Reader;
-use Ruvents\DoctrineBundle\Mapping\Author;
-use Ruvents\DoctrineBundle\Mapping\PersistTimestamp;
-use Ruvents\DoctrineBundle\Mapping\SearchIndex;
-use Ruvents\DoctrineBundle\Mapping\Translatable;
-use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\Author;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\SearchIndex;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\Translatable;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 
 class MetadataFactory implements MetadataFactoryInterface
 {

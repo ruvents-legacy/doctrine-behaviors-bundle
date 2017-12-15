@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ruvents\DoctrineBundle\Strategy\TimestampStrategy;
+namespace Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
