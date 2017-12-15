@@ -8,6 +8,6 @@ namespace Ruwork\DoctrineBehaviorsBundle\Mapping;
  * @Annotation()
  * @Target("PROPERTY")
  */
-final class Translatable
+final class Multilingual
 {
 }

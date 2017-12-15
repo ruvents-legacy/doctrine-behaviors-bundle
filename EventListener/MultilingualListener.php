@@ -6,34 +6,34 @@ namespace Ruwork\DoctrineBehaviorsBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
-use Ruwork\DoctrineBehaviorsBundle\Translations\TranslationsInterface;
+use Ruwork\DoctrineBehaviorsBundle\Multilingual\MultilingualInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class TranslatableListener
+class MultilingualListener
 {
     private $factory;
     private $requestStack;
     private $defaultLocale;
 
     /**
-     * @var \SplObjectStorage|TranslationsInterface[]
+     * @var \SplObjectStorage|MultilingualInterface[]
      */
-    private $storage;
+    private $multilinguals;
 
     public function __construct(MetadataFactoryInterface $factory, RequestStack $requestStack, string $defaultLocale)
     {
         $this->factory = $factory;
         $this->requestStack = $requestStack;
         $this->defaultLocale = $defaultLocale;
-        $this->storage = new \SplObjectStorage();
+        $this->multilinguals = new \SplObjectStorage();
     }
 
     public function onKernelRequest(): void
     {
         $currentLocale = $this->getCurrentLocale();
 
-        foreach ($this->storage as $translations) {
-            $translations->setCurrentLocale($currentLocale);
+        foreach ($this->multilinguals as $multilingual) {
+            $multilingual->setCurrentLocale($currentLocale);
         }
     }
 
@@ -43,16 +43,16 @@ class TranslatableListener
         $class = get_class($entity);
         $entityMetadata = $args->getEntityManager()->getClassMetadata($class);
 
-        foreach ($this->factory->getMetadata($class)->getTranslatables() as $property => $translatable) {
+        foreach ($this->factory->getMetadata($class)->getMultilinguals() as $property => $multilingual) {
             $value = $entityMetadata->getFieldValue($entity, $property);
 
-            if (!$value instanceof TranslationsInterface) {
-                throw new \UnexpectedValueException(sprintf('Value of %s.%s@Translatable must be an instance of "%s", "%s" given.', $class, $property, TranslationsInterface::class, is_object($value) ? get_class($value) : gettype($value)));
+            if (!$value instanceof MultilingualInterface) {
+                throw new \UnexpectedValueException(sprintf('Value of %s.%s@Multilingual must be an instance of "%s", "%s" given.', $class, $property, MultilingualInterface::class, is_object($value) ? get_class($value) : gettype($value)));
             }
 
-            if (!$this->storage->contains($value)) {
+            if (!$this->multilinguals->contains($value)) {
                 $value->setCurrentLocale($this->getCurrentLocale());
-                $this->storage->attach($value);
+                $this->multilinguals->attach($value);
             }
         }
     }

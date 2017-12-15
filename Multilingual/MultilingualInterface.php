@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ruwork\DoctrineBehaviorsBundle\Translations;
+namespace Ruwork\DoctrineBehaviorsBundle\Multilingual;
 
-interface TranslationsInterface
+interface MultilingualInterface
 {
     public function setCurrentLocale(string $locale);
 

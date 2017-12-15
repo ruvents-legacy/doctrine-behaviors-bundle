@@ -7,7 +7,7 @@ namespace Ruwork\DoctrineBehaviorsBundle\Metadata;
 use Doctrine\Common\Annotations\Reader;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Author;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
-use Ruwork\DoctrineBehaviorsBundle\Mapping\Translatable;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\Multilingual;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 
 class MetadataFactory implements MetadataFactoryInterface
@@ -35,8 +35,8 @@ class MetadataFactory implements MetadataFactoryInterface
                     $metadata->addAuthor($name, $annotation);
                 } elseif ($annotation instanceof PersistTimestamp) {
                     $metadata->addPersistTimestamp($name, $annotation);
-                } elseif ($annotation instanceof Translatable) {
-                    $metadata->addTranslatable($name, $annotation);
+                } elseif ($annotation instanceof Multilingual) {
+                    $metadata->addMultilingual($name, $annotation);
                 } elseif ($annotation instanceof UpdateTimestamp) {
                     $metadata->addUpdateTimestamp($name, $annotation);
                 }

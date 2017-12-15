@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\DependencyInjection;
 
-use Ruwork\DoctrineBehaviorsBundle\EventListener\TranslatableListener;
+use Ruwork\DoctrineBehaviorsBundle\EventListener\MultilingualListener;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,7 +26,7 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                 ->setArgument('$cache', null);
         }
 
-        $container->findDefinition(TranslatableListener::class)
+        $container->findDefinition(MultilingualListener::class)
             ->setArgument('$defaultLocale', $config['default_locale']);
     }
 }

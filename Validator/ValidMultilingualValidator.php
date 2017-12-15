@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\Validator;
 
-use Ruwork\DoctrineBehaviorsBundle\Translations\TranslationsInterface;
+use Ruwork\DoctrineBehaviorsBundle\Multilingual\MultilingualInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class AssertTranslationsValidator extends ConstraintValidator
+class ValidMultilingualValidator extends ConstraintValidator
 {
     /**
      * {@inheritdoc}
      */
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof AssertTranslations) {
-            throw new UnexpectedTypeException($constraint, AssertTranslations::class);
+        if (!$constraint instanceof ValidMultilingual) {
+            throw new UnexpectedTypeException($constraint, ValidMultilingual::class);
         }
 
         if (null === $value) {
             return;
         }
 
-        if (!$value instanceof TranslationsInterface) {
-            throw new UnexpectedTypeException($value, TranslationsInterface::class);
+        if (!$value instanceof MultilingualInterface) {
+            throw new UnexpectedTypeException($value, MultilingualInterface::class);
         }
 
         foreach ($constraint->locales as $locale => $constraints) {

@@ -6,7 +6,7 @@ namespace Ruwork\DoctrineBehaviorsBundle\Metadata;
 
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Author;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
-use Ruwork\DoctrineBehaviorsBundle\Mapping\Translatable;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\Multilingual;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 
 final class Metadata
@@ -14,7 +14,7 @@ final class Metadata
     private $class;
     private $authors = [];
     private $persistTimestamps = [];
-    private $translatables = [];
+    private $multilinguals = [];
     private $updateTimestamps = [];
 
     public function __construct(string $class)
@@ -54,16 +54,16 @@ final class Metadata
     }
 
     /**
-     * @return Translatable[]
+     * @return Multilingual[]
      */
-    public function getTranslatables(): array
+    public function getMultilinguals(): array
     {
-        return $this->translatables;
+        return $this->multilinguals;
     }
 
-    public function addTranslatable(string $property, Translatable $translatable): void
+    public function addMultilingual(string $property, Multilingual $multilingual): void
     {
-        $this->translatables[$property] = $translatable;
+        $this->multilinguals[$property] = $multilingual;
     }
 
     /**

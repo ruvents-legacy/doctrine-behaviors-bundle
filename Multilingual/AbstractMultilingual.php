@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ruwork\DoctrineBehaviorsBundle\Translations;
+namespace Ruwork\DoctrineBehaviorsBundle\Multilingual;
 
-abstract class AbstractTranslations implements TranslationsInterface
+abstract class AbstractMultilingual implements MultilingualInterface
 {
     private $currentLocale;
 

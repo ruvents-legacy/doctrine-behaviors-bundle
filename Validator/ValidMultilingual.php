@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints\Composite as AbstractComposite;
  * @Annotation()
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  */
-class AssertTranslations extends AbstractComposite
+class ValidMultilingual extends AbstractComposite
 {
     /**
      * @var array
