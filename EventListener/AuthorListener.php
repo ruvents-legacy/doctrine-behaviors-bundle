@@ -23,12 +23,13 @@ class AuthorListener
     {
         $entity = $args->getEntity();
         $class = get_class($entity);
-        $entityMetadata = $args->getEntityManager()->getClassMetadata($class);
+        $metadata = $args->getEntityManager()->getClassMetadata($class);
+        $authors = $this->factory->getMetadata($class)->getAuthors();
 
-        foreach ($this->factory->getMetadata($class)->getAuthors() as $property => $author) {
-            if ($author->overwrite || !$entityMetadata->getFieldValue($entity, $property)) {
-                $value = $this->strategy->getAuthor($entityMetadata, $property);
-                $entityMetadata->setFieldValue($entity, $property, $value);
+        foreach ($authors as $property => $author) {
+            if ($author->overwrite || !$metadata->getFieldValue($entity, $property)) {
+                $value = $this->strategy->getAuthor($metadata, $property);
+                $metadata->setFieldValue($entity, $property, $value);
             }
         }
     }

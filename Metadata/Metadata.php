@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Ruwork\DoctrineBehaviorsBundle\Metadata;
 
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Author;
-use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Multilingual;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 
 final class Metadata
 {
     private $class;
     private $authors = [];
-    private $persistTimestamps = [];
     private $multilinguals = [];
+    private $persistTimestamps = [];
     private $updateTimestamps = [];
 
     public function __construct(string $class)
@@ -35,22 +35,11 @@ final class Metadata
         return $this->authors;
     }
 
-    public function addAuthor(string $property, Author $author): void
+    public function addAuthor(string $property, Author $author)
     {
         $this->authors[$property] = $author;
-    }
 
-    /**
-     * @return PersistTimestamp[]
-     */
-    public function getPersistTimestamps(): array
-    {
-        return $this->persistTimestamps;
-    }
-
-    public function addPersistTimestamp(string $property, PersistTimestamp $persistTimestamp): void
-    {
-        $this->persistTimestamps[$property] = $persistTimestamp;
+        return $this;
     }
 
     /**
@@ -61,9 +50,26 @@ final class Metadata
         return $this->multilinguals;
     }
 
-    public function addMultilingual(string $property, Multilingual $multilingual): void
+    public function addMultilingual(string $property, Multilingual $multilingual)
     {
         $this->multilinguals[$property] = $multilingual;
+
+        return $this;
+    }
+
+    /**
+     * @return PersistTimestamp[]
+     */
+    public function getPersistTimestamps(): array
+    {
+        return $this->persistTimestamps;
+    }
+
+    public function addPersistTimestamp(string $property, PersistTimestamp $persistTimestamp)
+    {
+        $this->persistTimestamps[$property] = $persistTimestamp;
+
+        return $this;
     }
 
     /**
@@ -74,8 +80,10 @@ final class Metadata
         return $this->updateTimestamps;
     }
 
-    public function addUpdateTimestamp(string $property, UpdateTimestamp $updateTimestamp): void
+    public function addUpdateTimestamp(string $property, UpdateTimestamp $updateTimestamp)
     {
         $this->updateTimestamps[$property] = $updateTimestamp;
+
+        return $this;
     }
 }

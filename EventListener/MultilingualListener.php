@@ -41,10 +41,11 @@ class MultilingualListener
     {
         $entity = $args->getEntity();
         $class = get_class($entity);
-        $entityMetadata = $args->getEntityManager()->getClassMetadata($class);
+        $metadata = $args->getEntityManager()->getClassMetadata($class);
+        $multilinguals = $this->factory->getMetadata($class)->getMultilinguals();
 
-        foreach ($this->factory->getMetadata($class)->getMultilinguals() as $property => $multilingual) {
-            $value = $entityMetadata->getFieldValue($entity, $property);
+        foreach ($multilinguals as $property => $multilingual) {
+            $value = $metadata->getFieldValue($entity, $property);
 
             if (!$value instanceof MultilingualInterface) {
                 throw new \UnexpectedValueException(sprintf('Value of %s.%s@Multilingual must be an instance of "%s", "%s" given.', $class, $property, MultilingualInterface::class, is_object($value) ? get_class($value) : gettype($value)));

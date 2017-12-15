@@ -23,12 +23,13 @@ class UpdateTimestampListener
     {
         $entity = $args->getEntity();
         $class = get_class($entity);
-        $entityMetadata = $args->getEntityManager()->getClassMetadata($class);
+        $metadata = $args->getEntityManager()->getClassMetadata($class);
+        $timestamps = $this->factory->getMetadata($class)->getUpdateTimestamps();
 
-        foreach ($this->factory->getMetadata($class)->getUpdateTimestamps() as $property => $updateTimestamp) {
-            if ($updateTimestamp->overwrite || !$entityMetadata->getFieldValue($entity, $property)) {
-                $value = $this->strategy->getTimestamp($entityMetadata, $property);
-                $entityMetadata->setFieldValue($entity, $property, $value);
+        foreach ($timestamps as $property => $timestamp) {
+            if ($timestamp->overwrite || !$metadata->getFieldValue($entity, $property)) {
+                $value = $this->strategy->getTimestamp($metadata, $property);
+                $metadata->setFieldValue($entity, $property, $value);
             }
         }
     }

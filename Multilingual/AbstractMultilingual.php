@@ -16,7 +16,7 @@ abstract class AbstractMultilingual implements MultilingualInterface
     public function get(string $locale)
     {
         if (!$this->has($locale)) {
-            throw new \OutOfBoundsException(sprintf('Class "%s" does not support locale "%s".', get_class($this), $locale));
+            throw new \OutOfBoundsException(sprintf('@Multilingual "%s" does not support locale "%s".', get_class($this), $locale));
         }
 
         return $this->$locale;
@@ -25,7 +25,7 @@ abstract class AbstractMultilingual implements MultilingualInterface
     public function set(string $locale, $value)
     {
         if (!$this->has($locale)) {
-            throw new \OutOfBoundsException(sprintf('Class "%s" does not support locale "%s".', get_class($this), $locale));
+            throw new \OutOfBoundsException(sprintf('@Multilingual "%s" does not support locale "%s".', get_class($this), $locale));
         }
 
         $this->$locale = $value;

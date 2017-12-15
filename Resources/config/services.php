@@ -6,8 +6,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\ORM\Events as ORMEvents;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\AuthorListener;
-use Ruwork\DoctrineBehaviorsBundle\EventListener\PersistTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\MultilingualListener;
+use Ruwork\DoctrineBehaviorsBundle\EventListener\PersistTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\UpdateTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactory;
@@ -60,13 +60,6 @@ return function (ContainerConfigurator $container): void {
         ])
         ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true]);
 
-    $services->set(PersistTimestampListener::class)
-        ->args([
-            '$factory' => ref(MetadataFactoryInterface::class),
-            '$strategy' => ref(TimestampStrategyInterface::class),
-        ])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true]);
-
     $services->set(MultilingualListener::class)
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
@@ -75,6 +68,13 @@ return function (ContainerConfigurator $container): void {
         ->tag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
         ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true])
         ->tag('doctrine.event_listener', ['event' => ORMEvents::postLoad, 'lazy' => true]);
+
+    $services->set(PersistTimestampListener::class)
+        ->args([
+            '$factory' => ref(MetadataFactoryInterface::class),
+            '$strategy' => ref(TimestampStrategyInterface::class),
+        ])
+        ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true]);
 
     $services->set(UpdateTimestampListener::class)
         ->args([
