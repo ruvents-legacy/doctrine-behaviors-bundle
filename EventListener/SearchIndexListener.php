@@ -4,16 +4,59 @@ declare(strict_types=1);
 
 namespace Ruvents\DoctrineBundle\EventListener;
 
+use App\EventListener\DoctrineListener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Ruvents\DoctrineBundle\Doctrine\Types\TsvectorType;
 use Ruvents\DoctrineBundle\Metadata\MetadataFactoryInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class SearchIndexListener
 {
     private $factory;
 
-    public function __construct(MetadataFactoryInterface $factory)
+    private $accessor;
+
+    public function __construct(MetadataFactoryInterface $factory, PropertyAccessor $accessor = null)
     {
         $this->factory = $factory;
+        $this->accessor = $accessor ?? PropertyAccess::createPropertyAccessor();
+    }
+
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    {
+        $platform = $args->getEntityManager()->getConnection()->getDatabasePlatform();
+
+        if ('postgresql' !== $platform->getName()) {
+            return;
+        }
+
+        $entityMetadata = $args->getClassMetadata();
+        $class = $entityMetadata->getName();
+        $metadata = $this->factory->getMetadata($class);
+
+        foreach ($metadata->getSearchIndexes() as $property => $searchIndex) {
+            if (TsvectorType::NAME !== (string) $entityMetadata->getTypeOfField($property)) {
+                continue;
+            }
+
+            $column = $entityMetadata->getColumnName($property);
+            $indexName = $this->generateIndexName($column);
+
+            $entityMetadata->table['indexes'][$indexName] = [
+                'columns' => [
+                    $column,
+                ],
+                'flags' => [
+                    DoctrineListener::GIN,
+                ],
+            ];
+        }
+
+        $args->getEntityManager()
+            ->getMetadataFactory()
+            ->setMetadataFor($class, $entityMetadata);
     }
 
     public function prePersist(LifecycleEventArgs $args): void
@@ -21,16 +64,12 @@ class SearchIndexListener
         $entity = $args->getEntity();
         $class = get_class($entity);
         $entityMetadata = $args->getEntityManager()->getClassMetadata($class);
+        $metadata = $this->factory->getMetadata($class);
 
-        foreach ($this->factory->getMetadata($class)->getSearchIndexes() as $property => $searchIndex) {
-            $method = $searchIndex->generatorMethod ?? 'generate'.ucfirst($property);
-            $generator = $entity->$method();
-
-            if (!$generator instanceof \Generator) {
-                throw new \UnexpectedValueException(sprintf('Method "%s::%s()" must return a \\Generator.', $class, $method));
-            }
-
-            $entityMetadata->setFieldValue($entity, $property, $this->createIndexString($generator));
+        foreach ($metadata->getSearchIndexes() as $property => $searchIndex) {
+            $generator = $this->getGenerator($entity, $searchIndex->propertyPaths);
+            $value = $this->implodeRecursive($generator);
+            $entityMetadata->setFieldValue($entity, $property, $value);
         }
     }
 
@@ -39,14 +78,30 @@ class SearchIndexListener
         $this->prePersist($args);
     }
 
-    private function createIndexString(\Generator $generator): string
+    private function generateIndexName(string $column): string
     {
-        $value = '';
+        return substr('idx_'.dechex(crc32($column)), 0, 30);
+    }
 
-        foreach ($generator as $phrase) {
-            $value .= (string) $phrase.' ';
+    private function getGenerator($entity, array $propertyPaths): \Generator
+    {
+        foreach ($propertyPaths as $propertyPath) {
+            yield $this->accessor->getValue($entity, $propertyPath);
+        }
+    }
+
+    private function implodeRecursive($value): string
+    {
+        if (is_iterable($value)) {
+            $string = '';
+
+            foreach ($value as $item) {
+                $string .= ' '.$this->implodeRecursive($item);
+            }
+
+            return $string;
         }
 
-        return trim(preg_replace('/\s+/', ' ', $value));
+        return (string) $value;
     }
 }

@@ -11,7 +11,14 @@ namespace Ruvents\DoctrineBundle\Mapping;
 final class SearchIndex
 {
     /**
-     * @var null|string
+     * @Required()
+     *
+     * @var <string>
      */
-    public $generatorMethod;
+    public $propertyPaths = [];
+
+    public function setValue($value)
+    {
+        $this->propertyPaths = $value;
+    }
 }

@@ -20,10 +20,6 @@ class Configuration implements ConfigurationInterface
         $builder
             ->root('ruvents_doctrine')
                 ->children()
-                    ->scalarNode('metadata_cache')
-                        ->cannotBeEmpty()
-                        ->defaultValue('cache.app')
-                    ->end()
                     ->scalarNode('default_locale')
                         ->cannotBeEmpty()
                         ->defaultValue('%kernel.default_locale%');
