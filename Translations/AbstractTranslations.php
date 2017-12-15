@@ -61,7 +61,7 @@ abstract class AbstractTranslations implements TranslationsInterface
         return $current;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->getCurrent();
     }

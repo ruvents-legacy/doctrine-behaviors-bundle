@@ -11,7 +11,6 @@ use Ruwork\DoctrineBehaviorsBundle\Strategy\AuthorStrategy\AuthorStrategyInterfa
 class AuthorListener
 {
     private $factory;
-
     private $strategy;
 
     public function __construct(MetadataFactoryInterface $factory, AuthorStrategyInterface $strategy)

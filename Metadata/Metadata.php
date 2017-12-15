@@ -12,13 +12,9 @@ use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 final class Metadata
 {
     private $class;
-
     private $authors = [];
-
     private $persistTimestamps = [];
-
     private $translatables = [];
-
     private $updateTimestamps = [];
 
     public function __construct(string $class)

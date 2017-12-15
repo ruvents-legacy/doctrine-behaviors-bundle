@@ -11,7 +11,6 @@ use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\TimestampStrategyI
 class PersistTimestampListener
 {
     private $factory;
-
     private $strategy;
 
     public function __construct(MetadataFactoryInterface $factory, TimestampStrategyInterface $strategy)

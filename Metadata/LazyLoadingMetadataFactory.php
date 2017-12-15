@@ -9,9 +9,7 @@ use Psr\Cache\CacheItemPoolInterface;
 class LazyLoadingMetadataFactory implements MetadataFactoryInterface
 {
     private $factory;
-
     private $cache;
-
     private $metadata = [];
 
     public function __construct(MetadataFactoryInterface $factory, CacheItemPoolInterface $cache = null)
