@@ -20,7 +20,7 @@ trait DefaultMappingTrait
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
-        if (null === $this->defaultMappingVariant || null === $this->defaultMapping) {
+        if (null === $this->defaultMappingVariant) {
             return;
         }
 
@@ -46,11 +46,15 @@ trait DefaultMappingTrait
                     'fieldName' => $property,
                     'targetEntity' => $this->defaultMapping['target_entity'],
                     'fetch' => constant(ClassMetadata::class.'::FETCH_'.$this->defaultMapping['fetch']),
-                    'joinColumns' => [
-                        [
-                            'nullable' => $this->defaultMapping['nullable'],
-                        ],
-                    ],
+                    'joinColumns' => [['nullable' => $this->defaultMapping['nullable']]],
+                ]);
+            } elseif ('one_to_one' === $this->defaultMappingVariant) {
+                $metadata->mapOneToOne([
+                    'fieldName' => $property,
+                    'targetEntity' => $this->defaultMapping['target_entity'],
+                    'fetch' => constant(ClassMetadata::class.'::FETCH_'.$this->defaultMapping['fetch']),
+                    'orphanRemoval' => $this->defaultMapping['orphan_removal'],
+                    'joinColumns' => [['nullable' => $this->defaultMapping['nullable']]],
                 ]);
             } elseif ('embedded' === $this->defaultMappingVariant) {
                 $metadata->mapEmbedded([

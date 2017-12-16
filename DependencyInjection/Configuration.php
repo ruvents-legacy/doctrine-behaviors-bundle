@@ -21,7 +21,6 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         /* @noinspection PhpIncompatibleReturnTypeInspection */
-        // @formatter:off
         return (new TreeBuilder())
             ->root('ruwork_doctrine_behaviors')
                 ->beforeNormalization()
@@ -57,12 +56,10 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
-        // @formatter:on
     }
 
     private function author(): ArrayNodeDefinition
     {
-        // @formatter:off
         return (new TreeBuilder())
             ->root('author')
                 ->canBeDisabled()
@@ -78,12 +75,10 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     )
                 ->end();
-        // @formatter:on
     }
 
     private function multilingual(): ArrayNodeDefinition
     {
-        // @formatter:off
         return (new TreeBuilder())
             ->root('multilingual')
                 ->canBeDisabled()
@@ -94,17 +89,15 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->append($this->defaultMapping()
                         ->children()
-                            //->append($this->manyToOne()->canBeEnabled())
-                            ->append($this->embedded()/*->canBeEnabled()*/)
+                            ->append($this->oneToOne()->canBeEnabled())
+                            ->append($this->embedded()->canBeEnabled())
                         ->end()
                     )
                 ->end();
-        // @formatter:on
     }
 
     private function timestamp(string $name, bool $nullableDefault): ArrayNodeDefinition
     {
-        // @formatter:off
         return (new TreeBuilder())
             ->root($name)
                 ->canBeDisabled()
@@ -119,12 +112,10 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     )
                 ->end();
-        // @formatter:on
     }
 
     private function defaultMapping()
     {
-        // @formatter:off
         return (new TreeBuilder())
             ->root('default_mapping')
                 ->canBeEnabled()
@@ -150,12 +141,10 @@ class Configuration implements ConfigurationInterface
                         return $value + ['enabled_variant' => $enabledVariants[0]];
                     })
                 ->end();
-        // @formatter:on
     }
 
     private function field(string $type, bool $nullableDefault): ArrayNodeDefinition
     {
-        // @formatter:off
         return (new TreeBuilder())
             ->root('field')
                 ->addDefaultsIfNotSet()
@@ -171,14 +160,27 @@ class Configuration implements ConfigurationInterface
                         ->min(0)
                     ->end()
                 ->end();
-        // @formatter:on
+    }
+
+    private function oneToOne(): ArrayNodeDefinition
+    {
+        return $this->association('one_to_one')
+            ->children()
+                ->booleanNode('orphan_removal')
+                    ->defaultTrue()
+                ->end()
+            ->end();
     }
 
     private function manyToOne(): ArrayNodeDefinition
     {
-        // @formatter:off
+        return $this->association('many_to_one');
+    }
+
+    private function association(string $name): ArrayNodeDefinition
+    {
         return (new TreeBuilder())
-            ->root('many_to_one')
+            ->root($name)
                 ->addDefaultsIfNotSet()
                 ->children()
                     ->scalarNode('target_entity')
@@ -192,14 +194,17 @@ class Configuration implements ConfigurationInterface
                         ->values(['LAZY', 'EAGER', 'EXTRA_LAZY'])
                         ->cannotBeEmpty()
                         ->defaultValue('LAZY')
+                        ->beforeNormalization()
+                            ->always(function ($value) {
+                                return is_string($value) ? strtoupper($value) : $value;
+                            })
+                        ->end()
                     ->end()
                 ->end();
-        // @formatter:on
     }
 
     private function embedded(): ArrayNodeDefinition
     {
-        // @formatter:off
         return (new TreeBuilder())
             ->root('embedded')
                 ->addDefaultsIfNotSet()
@@ -209,6 +214,5 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                     ->end()
                 ->end();
-        // @formatter:on
     }
 }
