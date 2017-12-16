@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Doctrine\ORM\Events as ORMEvents;
+use Ruwork\DoctrineBehaviorsBundle\DependencyInjection\RuworkDoctrineBehaviorsExtension as DI;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\AuthorListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\MultilingualListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\PersistTimestampListener;
@@ -12,15 +12,12 @@ use Ruwork\DoctrineBehaviorsBundle\EventListener\UpdateTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactory;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
-use Ruwork\DoctrineBehaviorsBundle\Strategy\AuthorStrategy\AuthorStrategyInterface;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\AuthorStrategy\SecurityTokenAuthorStrategy;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\FieldTypeTimestampStrategy;
-use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\TimestampStrategyInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 return function (ContainerConfigurator $container): void {
     $container->services()
-        ->set('cache.ruwork.doctrine_behaviors')
+        ->set($cacheId = 'cache.ruwork_doctrine_behaviors')
         ->parent('cache.system')
         ->private()
         ->tag('cache.pool');
@@ -37,7 +34,7 @@ return function (ContainerConfigurator $container): void {
     $services->set(LazyLoadingMetadataFactory::class)
         ->args([
             '$factory' => ref(MetadataFactory::class),
-            '$cache' => ref('cache.ruwork.doctrine_behaviors'),
+            '$cache' => ref($cacheId),
         ]);
 
     $services->alias(MetadataFactoryInterface::class, LazyLoadingMetadataFactory::class);
@@ -47,39 +44,30 @@ return function (ContainerConfigurator $container): void {
             '$tokenStorage' => ref('security.token_storage'),
         ]);
 
-    $services->alias(AuthorStrategyInterface::class, SecurityTokenAuthorStrategy::class);
-
     $services->set(FieldTypeTimestampStrategy::class);
 
-    $services->alias(TimestampStrategyInterface::class, FieldTypeTimestampStrategy::class);
-
-    $services->set(AuthorListener::class)
+    $services->set(DI::LISTENER.'author', AuthorListener::class)
+        ->abstract()
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
-            '$strategy' => ref(AuthorStrategyInterface::class),
-        ])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true]);
+        ]);
 
-    $services->set(MultilingualListener::class)
+    $services->set(DI::LISTENER.'multilingual', MultilingualListener::class)
+        ->abstract()
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
             '$requestStack' => ref('request_stack'),
-        ])
-        ->tag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::postLoad, 'lazy' => true]);
+        ]);
 
-    $services->set(PersistTimestampListener::class)
+    $services->set(DI::LISTENER.'persist_timestamp', PersistTimestampListener::class)
+        ->abstract()
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
-            '$strategy' => ref(TimestampStrategyInterface::class),
-        ])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::prePersist, 'lazy' => true]);
+        ]);
 
-    $services->set(UpdateTimestampListener::class)
+    $services->set(DI::LISTENER.'update_timestamp', UpdateTimestampListener::class)
+        ->abstract()
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
-            '$strategy' => ref(TimestampStrategyInterface::class),
-        ])
-        ->tag('doctrine.event_listener', ['event' => ORMEvents::preUpdate, 'lazy' => true]);
+        ]);
 };

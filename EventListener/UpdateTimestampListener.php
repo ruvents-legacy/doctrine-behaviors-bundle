@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\EventListener;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\TimestampStrategyInterface;
 
-class UpdateTimestampListener
+class UpdateTimestampListener implements EventSubscriber
 {
     private $factory;
     private $strategy;
@@ -17,6 +19,16 @@ class UpdateTimestampListener
     {
         $this->factory = $factory;
         $this->strategy = $strategy;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSubscribedEvents(): array
+    {
+        return [
+            Events::preUpdate,
+        ];
     }
 
     public function preUpdate(LifecycleEventArgs $args): void
