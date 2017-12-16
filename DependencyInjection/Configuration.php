@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\DependencyInjection;
 
-use Doctrine\DBAL\Types\Type;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\AuthorStrategy\SecurityTokenAuthorStrategy;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\FieldTypeTimestampStrategy;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -42,12 +41,10 @@ class Configuration implements ConfigurationInterface
                         ])
                         ->useAttributeAsKey('connection')
                         ->arrayPrototype()
-                            ->children()
-                                ->append($this->author())
-                                ->append($this->multilingual())
-                                ->append($this->timestamp('persist_timestamp', false))
-                                ->append($this->timestamp('update_timestamp', true))
-                            ->end()
+                            ->append($this->author())
+                            ->append($this->multilingual())
+                            ->append($this->timestamp('persist_timestamp'))
+                            ->append($this->timestamp('update_timestamp'))
                         ->end()
                         ->validate()
                             ->always(function (array $value) {
@@ -76,10 +73,8 @@ class Configuration implements ConfigurationInterface
                         ->defaultValue(SecurityTokenAuthorStrategy::class)
                     ->end()
                     ->append($this->defaultMapping()
-                        ->children()
-                            ->append($this->manyToOne()->canBeEnabled())
-                            ->append($this->field(Type::STRING, false)->canBeEnabled())
-                        ->end()
+                        ->append($this->column()->canBeEnabled())
+                        ->append($this->manyToOne()->canBeEnabled())
                     )
                 ->end();
         // @formatter:on
@@ -97,16 +92,14 @@ class Configuration implements ConfigurationInterface
                         ->defaultValue('%kernel.default_locale%')
                     ->end()
                     ->append($this->defaultMapping()
-                        ->children()
-                            ->append($this->oneToOne()->canBeEnabled())
-                            ->append($this->embedded()->canBeEnabled())
-                        ->end()
+                        ->append($this->embedded()->canBeEnabled())
+                        ->append($this->oneToOne()->canBeEnabled())
                     )
                 ->end();
         // @formatter:on
     }
 
-    private function timestamp(string $name, bool $nullableDefault): ArrayNodeDefinition
+    private function timestamp(string $name): ArrayNodeDefinition
     {
         // @formatter:off
         return (new TreeBuilder())
@@ -118,9 +111,7 @@ class Configuration implements ConfigurationInterface
                         ->defaultValue(FieldTypeTimestampStrategy::class)
                     ->end()
                     ->append($this->defaultMapping()
-                        ->children()
-                            ->append($this->field(Type::DATETIMETZ_IMMUTABLE, $nullableDefault))
-                        ->end()
+                        ->append($this->column())
                     )
                 ->end();
         // @formatter:on
@@ -157,22 +148,26 @@ class Configuration implements ConfigurationInterface
         // @formatter:on
     }
 
-    private function field(string $type, bool $nullableDefault): ArrayNodeDefinition
+    private function column(): ArrayNodeDefinition
     {
         // @formatter:off
         return (new TreeBuilder())
-            ->root('field')
+            ->root('column')
                 ->addDefaultsIfNotSet()
                 ->children()
                     ->scalarNode('type')
+                        ->isRequired()
                         ->cannotBeEmpty()
-                        ->defaultValue($type)
-                    ->end()
-                    ->booleanNode('nullable')
-                        ->defaultValue($nullableDefault)
                     ->end()
                     ->integerNode('length')
-                        ->min(0)
+                        ->min(1)
+                        ->defaultNull()
+                    ->end()
+                    ->booleanNode('unique')
+                        ->defaultFalse()
+                    ->end()
+                    ->booleanNode('nullable')
+                        ->defaultFalse()
                     ->end()
                 ->end();
         // @formatter:on
@@ -184,7 +179,7 @@ class Configuration implements ConfigurationInterface
         return $this->association('one_to_one')
             ->children()
                 ->booleanNode('orphan_removal')
-                    ->defaultTrue()
+                    ->defaultFalse()
                 ->end()
             ->end();
         // @formatter:on
@@ -206,8 +201,8 @@ class Configuration implements ConfigurationInterface
                         ->isRequired()
                         ->cannotBeEmpty()
                     ->end()
-                    ->booleanNode('nullable')
-                        ->defaultFalse()
+                    ->variableNode('cascade')
+                        ->defaultNull()
                     ->end()
                     ->enumNode('fetch')
                         ->values(['LAZY', 'EAGER', 'EXTRA_LAZY'])
@@ -218,6 +213,9 @@ class Configuration implements ConfigurationInterface
                                 return is_string($value) ? strtoupper($value) : $value;
                             })
                         ->end()
+                    ->end()
+                    ->booleanNode('nullable')
+                        ->defaultTrue()
                     ->end()
                 ->end();
         // @formatter:on
@@ -233,6 +231,9 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('class')
                         ->isRequired()
                         ->cannotBeEmpty()
+                    ->end()
+                    ->scalarNode('column_prefix')
+                        ->defaultNull()
                     ->end()
                 ->end();
         // @formatter:on

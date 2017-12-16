@@ -34,12 +34,13 @@ trait DefaultMappingTrait
                 continue;
             }
 
-            if ('field' === $this->defaultMappingVariant) {
+            if ('column' === $this->defaultMappingVariant) {
                 $metadata->mapField([
                     'fieldName' => $property,
                     'type' => $this->defaultMapping['type'],
+                    'length' => $this->defaultMapping['length'],
+                    'unique' => $this->defaultMapping['unique'],
                     'nullable' => $this->defaultMapping['nullable'],
-                    'length' => $this->defaultMapping['length'] ?? null,
                 ]);
             } elseif ('many_to_one' === $this->defaultMappingVariant) {
                 $metadata->mapManyToOne([
@@ -60,7 +61,7 @@ trait DefaultMappingTrait
                 $metadata->mapEmbedded([
                     'fieldName' => $property,
                     'class' => $this->defaultMapping['class'],
-                    'columnPrefix' => null,
+                    'columnPrefix' => $this->defaultMapping['column_prefix'],
                 ]);
                 $embeddableMetadata = $args->getEntityManager()->getClassMetadata($this->defaultMapping['class']);
                 $metadata->inlineEmbeddable($property, $embeddableMetadata);
