@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\DependencyInjection;
 
+use Doctrine\ORM\Events;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
@@ -33,66 +33,61 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
         }
 
         $byConnection = $config['by_connection'];
+        $anyConnection = isset($byConnection[Configuration::CONNECTION_ANY]) && 1 === count($byConnection);
 
-        if (isset($byConnection[Configuration::CONNECTION_ANY]) && 1 === count($byConnection)) {
-            $this->configureConnection($container, $byConnection[Configuration::CONNECTION_ANY]);
-        } else {
-            foreach ($config['by_connection'] as $connection => $connectionConfig) {
-                $this->configureConnection($container, $connectionConfig, $connection);
+        foreach ($byConnection as $connection => $connectionConfig) {
+            $listeners = $this->getListeners($connectionConfig, $anyConnection ? null : $connection);
+
+            foreach ($listeners as $listener) {
+                $id = $listener->getParent().'.'.$connection;
+                $container->setDefinition($id, $listener);
             }
         }
     }
 
-    private function configureConnection(ContainerBuilder $container, array $config, string $connection = null): void
+    /**
+     * @return \Generator|ChildDefinition[]
+     */
+    private function getListeners(array $config, string $connection = null): \Generator
     {
-        if (null === $connection) {
-            $tagAttributes = [];
-            $connection = 'any';
-        } else {
-            $tagAttributes = ['connection' => $connection];
-        }
+        $attr = ['lazy' => true] + ($connection ? ['connection' => $connection] : []);
 
         foreach ($config as $behavior => $behaviorConfig) {
             if (!$behaviorConfig['enabled']) {
                 continue;
             }
 
-            $definition = (new ChildDefinition(self::LISTENER.$behavior))
-                ->addTag('doctrine.event_subscriber', $tagAttributes);
+            $definition = new ChildDefinition(self::LISTENER.$behavior);
 
             switch ($behavior) {
                 case 'author':
-                    $this->configureAuthorListener($definition, $behaviorConfig);
+                    $definition
+                        ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
+                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::prePersist]);
                     break;
 
                 case 'multilingual':
-                    $this->configureMultilingualListener($definition, $behaviorConfig);
+                    $definition
+                        ->setArgument('$defaultLocale', $behaviorConfig['default_locale'])
+                        ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
+                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::prePersist])
+                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::postLoad]);
                     break;
 
                 case 'persist_timestamp':
+                    $definition
+                        ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
+                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::prePersist]);
+                    break;
+
                 case 'update_timestamp':
-                    $this->configureTimestampListener($definition, $behaviorConfig);
+                    $definition
+                        ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
+                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::preUpdate]);
                     break;
             }
 
-            $container->setDefinition(self::LISTENER.$behavior.'.'.$connection, $definition);
+            yield $definition;
         }
-    }
-
-    private function configureAuthorListener(Definition $definition, array $config): void
-    {
-        $definition->setArgument('$strategy', new Reference($config['strategy']));
-    }
-
-    private function configureMultilingualListener(Definition $definition, array $config): void
-    {
-        $definition
-            ->setArgument('$defaultLocale', $config['default_locale'])
-            ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST]);
-    }
-
-    private function configureTimestampListener(Definition $definition, array $config): void
-    {
-        $definition->setArgument('$strategy', new Reference($config['strategy']));
     }
 }

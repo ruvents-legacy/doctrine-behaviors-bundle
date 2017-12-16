@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\TimestampStrategyInterface;
 
-class PersistTimestampListener implements EventSubscriber
+class PersistTimestampListener
 {
     private $factory;
     private $strategy;
@@ -19,16 +17,6 @@ class PersistTimestampListener implements EventSubscriber
     {
         $this->factory = $factory;
         $this->strategy = $strategy;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::prePersist,
-        ];
     }
 
     public function prePersist(LifecycleEventArgs $args): void

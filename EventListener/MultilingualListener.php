@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
 use Ruwork\DoctrineBehaviorsBundle\Multilingual\MultilingualInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class MultilingualListener implements EventSubscriber
+class MultilingualListener
 {
     private $factory;
     private $requestStack;
@@ -28,17 +26,6 @@ class MultilingualListener implements EventSubscriber
         $this->requestStack = $requestStack;
         $this->defaultLocale = $defaultLocale;
         $this->multilinguals = new \SplObjectStorage();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSubscribedEvents()
-    {
-        return [
-            Events::prePersist,
-            Events::postLoad,
-        ];
     }
 
     public function onKernelRequest(): void
