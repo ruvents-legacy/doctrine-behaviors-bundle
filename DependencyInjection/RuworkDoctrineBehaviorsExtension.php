@@ -64,6 +64,7 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                     $definition
                         ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
+
                     break;
 
                 case 'multilingual':
@@ -72,18 +73,21 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                         ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist])
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::postLoad]);
+
                     break;
 
                 case 'persist_timestamp':
                     $definition
                         ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
+
                     break;
 
                 case 'update_timestamp':
                     $definition
                         ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::preUpdate]);
+
                     break;
             }
 
