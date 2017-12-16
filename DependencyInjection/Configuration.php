@@ -29,7 +29,7 @@ class Configuration implements ConfigurationInterface
                     ->then(function (array $value): array {
                         return [
                             'profiles' => [
-                                '*' => $value
+                                '*' => $value,
                             ]
                         ];
                     })
