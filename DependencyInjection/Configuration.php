@@ -21,6 +21,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         /* @noinspection PhpIncompatibleReturnTypeInspection */
+        // @formatter:off
         return (new TreeBuilder())
             ->root('ruwork_doctrine_behaviors')
                 ->beforeNormalization()
@@ -56,10 +57,12 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+        // @formatter:on
     }
 
     private function author(): ArrayNodeDefinition
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root('author')
                 ->canBeDisabled()
@@ -75,10 +78,12 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     )
                 ->end();
+        // @formatter:on
     }
 
     private function multilingual(): ArrayNodeDefinition
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root('multilingual')
                 ->canBeDisabled()
@@ -94,10 +99,12 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     )
                 ->end();
+        // @formatter:on
     }
 
     private function timestamp(string $name, bool $nullableDefault): ArrayNodeDefinition
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root($name)
                 ->canBeDisabled()
@@ -112,10 +119,12 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     )
                 ->end();
+        // @formatter:on
     }
 
     private function defaultMapping()
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root('default_mapping')
                 ->canBeEnabled()
@@ -141,10 +150,12 @@ class Configuration implements ConfigurationInterface
                         return $value + ['enabled_variant' => $enabledVariants[0]];
                     })
                 ->end();
+        // @formatter:on
     }
 
     private function field(string $type, bool $nullableDefault): ArrayNodeDefinition
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root('field')
                 ->addDefaultsIfNotSet()
@@ -160,16 +171,19 @@ class Configuration implements ConfigurationInterface
                         ->min(0)
                     ->end()
                 ->end();
+        // @formatter:on
     }
 
     private function oneToOne(): ArrayNodeDefinition
     {
+        // @formatter:off
         return $this->association('one_to_one')
             ->children()
                 ->booleanNode('orphan_removal')
                     ->defaultTrue()
                 ->end()
             ->end();
+        // @formatter:on
     }
 
     private function manyToOne(): ArrayNodeDefinition
@@ -179,6 +193,7 @@ class Configuration implements ConfigurationInterface
 
     private function association(string $name): ArrayNodeDefinition
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root($name)
                 ->addDefaultsIfNotSet()
@@ -201,10 +216,12 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end();
+        // @formatter:on
     }
 
     private function embedded(): ArrayNodeDefinition
     {
+        // @formatter:off
         return (new TreeBuilder())
             ->root('embedded')
                 ->addDefaultsIfNotSet()
@@ -214,5 +231,6 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                     ->end()
                 ->end();
+        // @formatter:on
     }
 }
