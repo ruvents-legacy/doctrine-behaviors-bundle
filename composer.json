@@ -12,10 +12,14 @@
     "require": {
         "php": "^7.1",
         "doctrine/dbal": "^2.6",
+        "doctrine/doctrine-bundle": "^1.8",
         "doctrine/orm": "^2.5",
         "symfony/config": "^3.4 || ^4.0",
         "symfony/dependency-injection": "^3.4 || ^4.0",
-        "symfony/http-kernel": "^3.4 || ^4.0"
+        "symfony/http-foundation": "^3.4 || ^4.0",
+        "symfony/http-kernel": "^3.4 || ^4.0",
+        "symfony/security": "^3.4 || ^4.0",
+        "symfony/validator": "^3.4 || ^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -24,6 +28,9 @@
         "exclude-from-classmap": [
             "/Tests/"
         ]
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
