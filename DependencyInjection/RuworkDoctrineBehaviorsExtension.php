@@ -50,7 +50,7 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
      */
     private function getListeners(array $config, string $connection = null): \Generator
     {
-        $attr = ['lazy' => true] + ($connection ? ['connection' => $connection] : []);
+        $tagAttr = ['lazy' => true] + ($connection ? ['connection' => $connection] : []);
 
         foreach ($config as $behavior => $behaviorConfig) {
             if (!$behaviorConfig['enabled']) {
@@ -63,28 +63,37 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                 case 'author':
                     $definition
                         ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
-                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::prePersist]);
+                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
                     break;
 
                 case 'multilingual':
                     $definition
                         ->setArgument('$defaultLocale', $behaviorConfig['default_locale'])
                         ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
-                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::prePersist])
-                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::postLoad]);
+                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist])
+                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::postLoad]);
                     break;
 
                 case 'persist_timestamp':
                     $definition
                         ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
-                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::prePersist]);
+                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
                     break;
 
                 case 'update_timestamp':
                     $definition
                         ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
-                        ->addTag('doctrine.event_listener', $attr + ['event' => Events::preUpdate]);
+                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::preUpdate]);
                     break;
+            }
+
+            if ($behaviorConfig['default_mapping']['enabled']) {
+                $variant = $behaviorConfig['default_mapping']['enabled_variant'];
+                $mapping = $behaviorConfig['default_mapping'][$variant];
+
+                $definition
+                    ->addMethodCall('setDefaultMapping', [$variant, $mapping])
+                    ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::loadClassMetadata]);
             }
 
             yield $definition;

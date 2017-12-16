@@ -71,47 +71,12 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                         ->defaultValue(SecurityTokenAuthorStrategy::class)
                     ->end()
-                    ->arrayNode('default_mapping')
-                        ->canBeEnabled()
-                        ->beforeNormalization()
-                            ->ifTrue(function ($value): bool {
-                                return is_array($value) && !array_key_exists('association', $value) && !array_key_exists('field', $value);
-                            })
-                            ->then(function (array $value): array {
-                                if (array_key_exists('nullable', $value)) {
-                                    $section = array_key_exists('target_entity', $value) ? 'association' : 'field';
-                                    $value[$section]['nullable'] = $value['nullable'];
-                                    unset($value['nullable']);
-                                }
-
-                                foreach (['target_entity', 'fetch'] as $key) {
-                                    if (array_key_exists($key, $value)) {
-                                        $value['association'][$key] = $value[$key];
-                                        unset($value[$key]);
-                                    }
-                                }
-
-                                foreach (['type', 'length'] as $key) {
-                                    if (array_key_exists($key, $value)) {
-                                        $value['field'][$key] = $value[$key];
-                                        unset($value[$key]);
-                                    }
-                                }
-
-                                return $value;
-                            })
-                        ->end()
+                    ->append($this->defaultMapping()
                         ->children()
-                            ->append($this->association())
-                            ->append($this->field(Type::STRING, false))
+                            ->append($this->manyToOne()->canBeEnabled())
+                            ->append($this->field(Type::STRING, false)->canBeEnabled())
                         ->end()
-                        ->validate()
-                            ->ifTrue(function (array $value): bool {
-                                return !($value['association']['enabled'] xor $value['field']['enabled']);
-                            })
-                            ->thenInvalid('Association xor field options must be provided.')
-                        ->end()
-                    ->end()
+                    )
                 ->end();
         // @formatter:on
     }
@@ -127,44 +92,17 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                         ->defaultValue('%kernel.default_locale%')
                     ->end()
-                    ->arrayNode('default_mapping')
-                        ->canBeEnabled()
-                        ->beforeNormalization()
-                            ->ifTrue(function ($value): bool {
-                                return is_array($value) && !array_key_exists('association', $value) && !array_key_exists('embedded', $value);
-                            })
-                            ->then(function (array $value): array {
-                                /*foreach (['target_entity', 'nullable', 'fetch'] as $key) {
-                                    if (array_key_exists($key, $value)) {
-                                        $value['association'][$key] = $value[$key];
-                                        unset($value[$key]);
-                                    }
-                                }*/
-
-                                if (array_key_exists('class', $value)) {
-                                    $value['embedded']['class'] = $value['class'];
-                                    unset($value['class']);
-                                }
-
-                                return $value;
-                            })
-                        ->end()
+                    ->append($this->defaultMapping()
                         ->children()
-                            //->append($this->association())
-                            ->append($this->embedded())
+                            //->append($this->manyToOne()->canBeEnabled())
+                            ->append($this->embedded()/*->canBeEnabled()*/)
                         ->end()
-                        ->validate()
-                            ->ifTrue(function (array $value): bool {
-                                return !($value['association']['enabled'] xor $value['embedded']['enabled']);
-                            })
-                            ->thenInvalid('Association xor embedded options must be provided.')
-                        ->end()
-                    ->end()
+                    )
                 ->end();
         // @formatter:on
     }
 
-    private function timestamp(string $name, bool $nullableDefaultValue): ArrayNodeDefinition
+    private function timestamp(string $name, bool $nullableDefault): ArrayNodeDefinition
     {
         // @formatter:off
         return (new TreeBuilder())
@@ -175,19 +113,73 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                         ->defaultValue(FieldTypeTimestampStrategy::class)
                     ->end()
-                    ->arrayNode('default_mapping')
-                        ->append($this->field(Type::DATETIMETZ_IMMUTABLE, $nullableDefaultValue))
+                    ->append($this->defaultMapping()
+                        ->children()
+                            ->append($this->field(Type::DATETIMETZ_IMMUTABLE, $nullableDefault))
+                        ->end()
+                    )
+                ->end();
+        // @formatter:on
+    }
+
+    private function defaultMapping()
+    {
+        // @formatter:off
+        return (new TreeBuilder())
+            ->root('default_mapping')
+                ->canBeEnabled()
+                ->validate()
+                    ->always(function (array $value): array {
+                        $variants = [];
+                        $enabledVariants = [];
+
+                        foreach ($value as $variant => $mapping) {
+                            if (is_array($mapping)) {
+                                if ($mapping['enabled'] ?? true) {
+                                    $enabledVariants[] = $variant;
+                                }
+
+                                $variants[] = $variant;
+                            }
+                        }
+
+                        if (1 !== count($enabledVariants)) {
+                            throw new \InvalidArgumentException(sprintf('Exactly one of the mapping variants among "%s" must be enabled.', implode('", "', $variants)));
+                        }
+
+                        return $value + ['enabled_variant' => $enabledVariants[0]];
+                    })
+                ->end();
+        // @formatter:on
+    }
+
+    private function field(string $type, bool $nullableDefault): ArrayNodeDefinition
+    {
+        // @formatter:off
+        return (new TreeBuilder())
+            ->root('field')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->scalarNode('type')
+                        ->cannotBeEmpty()
+                        ->defaultValue($type)
+                    ->end()
+                    ->booleanNode('nullable')
+                        ->defaultValue($nullableDefault)
+                    ->end()
+                    ->integerNode('length')
+                        ->min(0)
                     ->end()
                 ->end();
         // @formatter:on
     }
 
-    private function association(): ArrayNodeDefinition
+    private function manyToOne(): ArrayNodeDefinition
     {
         // @formatter:off
         return (new TreeBuilder())
-            ->root('association')
-                ->canBeEnabled()
+            ->root('many_to_one')
+                ->addDefaultsIfNotSet()
                 ->children()
                     ->scalarNode('target_entity')
                         ->isRequired()
@@ -210,32 +202,11 @@ class Configuration implements ConfigurationInterface
         // @formatter:off
         return (new TreeBuilder())
             ->root('embedded')
-                ->canBeEnabled()
+                ->addDefaultsIfNotSet()
                 ->children()
                     ->scalarNode('class')
                         ->isRequired()
                         ->cannotBeEmpty()
-                    ->end()
-                ->end();
-        // @formatter:on
-    }
-
-    private function field(string $type, bool $nullableDefaultValue): ArrayNodeDefinition
-    {
-        // @formatter:off
-        return (new TreeBuilder())
-            ->root('field')
-                ->canBeEnabled()
-                ->children()
-                    ->scalarNode('type')
-                        ->cannotBeEmpty()
-                        ->defaultValue($type)
-                    ->end()
-                    ->booleanNode('nullable')
-                        ->defaultValue($nullableDefaultValue)
-                    ->end()
-                    ->integerNode('length')
-                        ->min(0)
                     ->end()
                 ->end();
         // @formatter:on

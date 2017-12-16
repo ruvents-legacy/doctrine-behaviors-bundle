@@ -10,6 +10,8 @@ use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\TimestampStrategyI
 
 class PersistTimestampListener
 {
+    use DefaultMappingTrait;
+
     private $factory;
     private $strategy;
 
@@ -32,5 +34,13 @@ class PersistTimestampListener
                 $metadata->setFieldValue($entity, $property, $value);
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getMappedProperties(string $class): iterable
+    {
+        return array_keys($this->factory->getMetadata($class)->getPersistTimestamps());
     }
 }

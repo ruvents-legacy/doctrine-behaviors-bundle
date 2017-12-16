@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class MultilingualListener
 {
+    use DefaultMappingTrait;
+
     private $factory;
     private $requestStack;
     private $defaultLocale;
@@ -61,6 +63,14 @@ class MultilingualListener
     public function postLoad(LifecycleEventArgs $args): void
     {
         $this->prePersist($args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getMappedProperties(string $class): iterable
+    {
+        return array_keys($this->factory->getMetadata($class)->getMultilinguals());
     }
 
     private function getCurrentLocale(): string
