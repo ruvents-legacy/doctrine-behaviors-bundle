@@ -32,15 +32,15 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                 ->setArgument('$cache', null);
         }
 
-        $byConnection = $config['by_connection'];
-        $anyConnection = isset($byConnection[Configuration::CONNECTION_ANY]) && 1 === count($byConnection);
-
-        foreach ($byConnection as $connection => $connectionConfig) {
-            $listeners = $this->getListeners($connectionConfig, $anyConnection ? null : $connection);
-
-            foreach ($listeners as $listener) {
-                $id = $listener->getParent().'.'.$connection;
-                $container->setDefinition($id, $listener);
+        if (isset($config['profiles']['*'])) {
+            foreach ($this->getListeners($config['profiles']['*']) as $listener) {
+                $container->setDefinition($listener->getParent().'.any', $listener);
+            }
+        } else {
+            foreach ($config['profiles'] as $connection => $connectionConfig) {
+                foreach ($this->getListeners($connectionConfig, $connection) as $listener) {
+                    $container->setDefinition($listener->getParent().'.'.$connection, $listener);
+                }
             }
         }
     }
@@ -50,7 +50,7 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
      */
     private function getListeners(array $config, string $connection = null): \Generator
     {
-        $tagAttr = ['lazy' => true] + ($connection ? ['connection' => $connection] : []);
+        $tagAttr = ['lazy' => true] + (null === $connection ? ['connection' => $connection] : []);
 
         foreach ($config as $behavior => $behaviorConfig) {
             if (!$behaviorConfig['enabled']) {
@@ -62,7 +62,6 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
             switch ($behavior) {
                 case 'author':
                     $definition
-                        ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
 
                     break;
@@ -78,17 +77,19 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
 
                 case 'persist_timestamp':
                     $definition
-                        ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
 
                     break;
 
                 case 'update_timestamp':
                     $definition
-                        ->setArgument('$strategy', new Reference($behaviorConfig['strategy']))
                         ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::preUpdate]);
 
                     break;
+            }
+
+            if (isset($behaviorConfig['strategy'])) {
+                $definition->setArgument('$strategy', new Reference($behaviorConfig['strategy']));
             }
 
             if ($behaviorConfig['default_mapping']['enabled']) {

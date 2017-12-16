@@ -13,8 +13,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    const CONNECTION_ANY = 'any';
-
     /**
      * {@inheritdoc}
      */
@@ -26,24 +24,21 @@ class Configuration implements ConfigurationInterface
             ->root('ruwork_doctrine_behaviors')
                 ->beforeNormalization()
                     ->ifTrue(function ($value): bool {
-                        return is_array($value) && !array_key_exists('by_connection', $value);
+                        return is_array($value) && !array_key_exists('profiles', $value);
                     })
                     ->then(function (array $value): array {
-                        foreach (['author', 'multilingual', 'persist_timestamp', 'update_timestamp'] as $key) {
-                            if (array_key_exists($key, $value)) {
-                                $value['by_connection'][self::CONNECTION_ANY][$key] = $value[$key];
-                                unset($value[$key]);
-                            }
-                        }
-
-                        return $value;
+                        return [
+                            'profiles' => [
+                                '*' => $value
+                            ]
+                        ];
                     })
                 ->end()
                 ->children()
-                    ->arrayNode('by_connection')
+                    ->arrayNode('profiles')
                         ->cannotBeEmpty()
                         ->addDefaultChildrenIfNoneSet([
-                            'connection' => self::CONNECTION_ANY,
+                            'connection' => '*',
                         ])
                         ->useAttributeAsKey('connection')
                         ->arrayPrototype()
@@ -53,6 +48,15 @@ class Configuration implements ConfigurationInterface
                                 ->append($this->timestamp('persist_timestamp', false))
                                 ->append($this->timestamp('update_timestamp', true))
                             ->end()
+                        ->end()
+                        ->validate()
+                            ->always(function (array $value) {
+                                if (isset($value['*']) && 1 < count($value)) {
+                                    throw new \InvalidArgumentException('Global behavior setting (*) cannot be used along with concrete profiles.');
+                                }
+
+                                return $value;
+                            })
                         ->end()
                     ->end()
                 ->end()
