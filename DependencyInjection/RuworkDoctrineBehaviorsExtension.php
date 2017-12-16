@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ruwork\DoctrineBehaviorsBundle\DependencyInjection;
 
-use Doctrine\ORM\Events;
+use Doctrine\ORM\Events as ORMEvents;
+use Doctrine\ORM\Tools\ToolEvents;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -50,7 +51,13 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
      */
     private function getListeners(array $config, string $connection = null): \Generator
     {
-        $tagAttr = ['lazy' => true] + (null === $connection ? ['connection' => $connection] : []);
+        $attr = function (string $event) use ($connection): array {
+            return [
+                'event' => $event,
+                'connection' => $connection,
+                'lazy' => true,
+            ];
+        };
 
         foreach ($config as $behavior => $behaviorConfig) {
             if (!$behaviorConfig['enabled']) {
@@ -60,9 +67,15 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
             $definition = new ChildDefinition(self::LISTENER.$behavior);
 
             switch ($behavior) {
+                case 'search_column':
+                    $definition
+                        ->addTag('doctrine.event_listener', $attr(ToolEvents::postGenerateSchemaTable));
+
+                    break;
+
                 case 'author':
                     $definition
-                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
+                        ->addTag('doctrine.event_listener', $attr(ORMEvents::prePersist));
 
                     break;
 
@@ -70,20 +83,20 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                     $definition
                         ->setArgument('$defaultLocale', $behaviorConfig['default_locale'])
                         ->addTag('kernel.event_listener', ['event' => KernelEvents::REQUEST])
-                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist])
-                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::postLoad]);
+                        ->addTag('doctrine.event_listener', $attr(ORMEvents::prePersist))
+                        ->addTag('doctrine.event_listener', $attr(ORMEvents::postLoad));
 
                     break;
 
                 case 'persist_timestamp':
                     $definition
-                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::prePersist]);
+                        ->addTag('doctrine.event_listener', $attr(ORMEvents::prePersist));
 
                     break;
 
                 case 'update_timestamp':
                     $definition
-                        ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::preUpdate]);
+                        ->addTag('doctrine.event_listener', $attr(ORMEvents::preUpdate));
 
                     break;
             }
@@ -92,13 +105,13 @@ class RuworkDoctrineBehaviorsExtension extends ConfigurableExtension
                 $definition->setArgument('$strategy', new Reference($behaviorConfig['strategy']));
             }
 
-            if ($behaviorConfig['default_mapping']['enabled']) {
+            if ($behaviorConfig['default_mapping']['enabled'] ?? false) {
                 $variant = $behaviorConfig['default_mapping']['enabled_variant'];
                 $mapping = $behaviorConfig['default_mapping'][$variant];
 
                 $definition
                     ->addMethodCall('setDefaultMapping', [$variant, $mapping])
-                    ->addTag('doctrine.event_listener', $tagAttr + ['event' => Events::loadClassMetadata]);
+                    ->addTag('doctrine.event_listener', $attr(ORMEvents::loadClassMetadata));
             }
 
             yield $definition;

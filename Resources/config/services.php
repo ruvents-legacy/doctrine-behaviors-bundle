@@ -8,6 +8,7 @@ use Ruwork\DoctrineBehaviorsBundle\DependencyInjection\RuworkDoctrineBehaviorsEx
 use Ruwork\DoctrineBehaviorsBundle\EventListener\AuthorListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\MultilingualListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\PersistTimestampListener;
+use Ruwork\DoctrineBehaviorsBundle\EventListener\SearchColumnListener;
 use Ruwork\DoctrineBehaviorsBundle\EventListener\UpdateTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactory;
@@ -45,6 +46,12 @@ return function (ContainerConfigurator $container): void {
         ]);
 
     $services->set(FieldTypeTimestampStrategy::class);
+
+    $services->set(DI::LISTENER.'search_column', SearchColumnListener::class)
+        ->abstract()
+        ->args([
+            '$factory' => ref(MetadataFactoryInterface::class),
+        ]);
 
     $services->set(DI::LISTENER.'author', AuthorListener::class)
         ->abstract()

@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\Reader;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Author;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Multilingual;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\SearchColumn;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 
 class MetadataFactory implements MetadataFactoryInterface
@@ -26,6 +27,12 @@ class MetadataFactory implements MetadataFactoryInterface
     {
         $reflectionClass = new \ReflectionClass($class);
         $metadata = new Metadata($class);
+
+        foreach ($this->annotationReader->getClassAnnotations($reflectionClass) as $annotation) {
+            if ($annotation instanceof SearchColumn) {
+                $metadata->addSearchColumn($annotation);
+            }
+        }
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             $name = $reflectionProperty->getName();

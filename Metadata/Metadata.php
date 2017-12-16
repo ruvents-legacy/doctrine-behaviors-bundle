@@ -7,11 +7,13 @@ namespace Ruwork\DoctrineBehaviorsBundle\Metadata;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Author;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\Multilingual;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\PersistTimestamp;
+use Ruwork\DoctrineBehaviorsBundle\Mapping\SearchColumn;
 use Ruwork\DoctrineBehaviorsBundle\Mapping\UpdateTimestamp;
 
 final class Metadata
 {
     private $class;
+    private $searchColumns = [];
     private $authors = [];
     private $multilinguals = [];
     private $persistTimestamps = [];
@@ -25,6 +27,21 @@ final class Metadata
     public function getClass(): string
     {
         return $this->class;
+    }
+
+    /**
+     * @return SearchColumn[]
+     */
+    public function getSearchColumns(): array
+    {
+        return $this->searchColumns;
+    }
+
+    public function addSearchColumn(SearchColumn $column)
+    {
+        $this->searchColumns[] = $column;
+
+        return $this;
     }
 
     /**
@@ -65,9 +82,9 @@ final class Metadata
         return $this->persistTimestamps;
     }
 
-    public function addPersistTimestamp(string $property, PersistTimestamp $persistTimestamp)
+    public function addPersistTimestamp(string $property, PersistTimestamp $timestamp)
     {
-        $this->persistTimestamps[$property] = $persistTimestamp;
+        $this->persistTimestamps[$property] = $timestamp;
 
         return $this;
     }
@@ -80,9 +97,9 @@ final class Metadata
         return $this->updateTimestamps;
     }
 
-    public function addUpdateTimestamp(string $property, UpdateTimestamp $updateTimestamp)
+    public function addUpdateTimestamp(string $property, UpdateTimestamp $timestamp)
     {
-        $this->updateTimestamps[$property] = $updateTimestamp;
+        $this->updateTimestamps[$property] = $timestamp;
 
         return $this;
     }

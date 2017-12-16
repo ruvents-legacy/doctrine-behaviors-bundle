@@ -41,6 +41,7 @@ class Configuration implements ConfigurationInterface
                         ])
                         ->useAttributeAsKey('connection')
                         ->arrayPrototype()
+                            ->append($this->searchColumn())
                             ->append($this->author())
                             ->append($this->multilingual())
                             ->append($this->timestamp('persist_timestamp'))
@@ -58,6 +59,15 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+        // @formatter:on
+    }
+
+    private function searchColumn(): ArrayNodeDefinition
+    {
+        // @formatter:off
+        return (new TreeBuilder())
+            ->root('search_column')
+                ->canBeDisabled();
         // @formatter:on
     }
 
