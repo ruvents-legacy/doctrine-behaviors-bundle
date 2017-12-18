@@ -39,7 +39,7 @@ final class Metadata
 
     public function addSearchColumn(SearchColumn $column)
     {
-        $this->searchColumns[] = $column;
+        $this->searchColumns[$column->name] = $column;
 
         return $this;
     }

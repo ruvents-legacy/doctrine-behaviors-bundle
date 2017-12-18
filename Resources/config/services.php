@@ -13,6 +13,7 @@ use Ruwork\DoctrineBehaviorsBundle\EventListener\UpdateTimestampListener;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\LazyLoadingMetadataFactory;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactory;
 use Ruwork\DoctrineBehaviorsBundle\Metadata\MetadataFactoryInterface;
+use Ruwork\DoctrineBehaviorsBundle\Search\SearchManager;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\AuthorStrategy\SecurityTokenAuthorStrategy;
 use Ruwork\DoctrineBehaviorsBundle\Strategy\TimestampStrategy\FieldTypeTimestampStrategy;
 
@@ -76,5 +77,12 @@ return function (ContainerConfigurator $container): void {
         ->abstract()
         ->args([
             '$factory' => ref(MetadataFactoryInterface::class),
+        ]);
+
+    $services->set(SearchManager::class)
+        ->args([
+            '$doctrine' => ref('doctrine'),
+            '$factory' => ref(MetadataFactoryInterface::class),
+            '$accessor' => ref('property_accessor'),
         ]);
 };
