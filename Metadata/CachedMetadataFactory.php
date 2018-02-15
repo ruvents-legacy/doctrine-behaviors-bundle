@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruvents\DoctrineBundle\Metadata;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Doctrine\Common\Util\ClassUtils;
 
 class CachedMetadataFactory implements MetadataFactoryInterface
 {
@@ -28,6 +29,7 @@ class CachedMetadataFactory implements MetadataFactoryInterface
      */
     public function getMetadata(string $class): Metadata
     {
+        $class = ClassUtils::getRealClass($class);
         $item = $this->cache->getItem($this->getKey($class));
 
         if ($item->isHit()) {
