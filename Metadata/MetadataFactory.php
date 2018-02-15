@@ -12,6 +12,7 @@ use Ruvents\DoctrineBundle\Mapping\PersistTimestamp;
 use Ruvents\DoctrineBundle\Mapping\SearchIndex;
 use Ruvents\DoctrineBundle\Mapping\Translatable;
 use Ruvents\DoctrineBundle\Mapping\UpdateTimestamp;
+use Doctrine\Common\Util\ClassUtils;
 
 class MetadataFactory implements MetadataFactoryInterface
 {
@@ -30,6 +31,7 @@ class MetadataFactory implements MetadataFactoryInterface
      */
     public function getMetadata(string $class): Metadata
     {
+        $class = ClassUtils::getRealClass($class);
         $manager = $this->doctrine->getManagerForClass($class);
 
         if (!$manager instanceof EntityManagerInterface) {
