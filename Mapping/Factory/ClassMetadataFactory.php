@@ -2,6 +2,7 @@
 
 namespace Ruvents\DoctrineBundle\Mapping\Factory;
 
+use Doctrine\Common\Util\ClassUtils;
 use Ruvents\DoctrineBundle\Mapping\Loader\LoaderInterface;
 use Ruvents\DoctrineBundle\Mapping\Metadata\ClassMetadata;
 use Ruvents\DoctrineBundle\Mapping\Metadata\ClassMetadataInterface;
@@ -84,6 +85,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             );
         }
 
-        return get_class($value);
+        return ClassUtils::getClass($value);
     }
 }
